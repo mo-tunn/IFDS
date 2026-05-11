@@ -61,14 +61,20 @@ Uygulama açıldıktan sonra bir görüntü yükleyip çalıştırılacak algori
 
 AI modelleri opsiyoneldir. Model ağırlıkları yoksa uygulama klasik algoritmalar ve raporlama akışıyla çalışmaya devam eder.
 
-AI analizi için aşağıdaki dosyaları `data/models/` klasörüne yerleştirin:
+Bu repoda ana model dosyaları Git LFS ile takip edilir:
 
 ```text
 data/models/xception_finetuned.h5
 data/models/efficientnet_finetuned.h5
 ```
 
-Model ağırlıkları ve veri setleri büyük dosyalar olduğu için `.gitignore` kapsamındadır. Eğitim metrikleri için `docs/model_metrics.md` ve `data/models/training_results.json` dosyalarına bakabilirsiniz.
+Repoyu klonladıktan sonra model dosyaları eksik görünürse Git LFS'i kurup aşağıdaki komutu çalıştırın:
+
+```bash
+git lfs pull
+```
+
+Ek model ağırlıkları, veri setleri ve eğitim çıktıları büyük dosyalar olduğu için `.gitignore` kapsamındadır. Eğitim metrikleri için `docs/model_metrics.md` ve `data/models/training_results.json` dosyalarına bakabilirsiniz.
 
 ## Test
 
@@ -87,7 +93,7 @@ pytest tests -v --cov=src --cov-report=xml
 
 - `.env`, Streamlit secrets, sanal ortamlar, veri setleri ve model ağırlıkları repoya eklenmez.
 - `data/raw/`, `data/processed/` ve `data/models/` klasörleri `.gitkeep` ile korunur.
-- Büyük model dosyalarını paylaşmanız gerekiyorsa Git LFS veya harici bir model depolama alanı kullanmanız önerilir.
+- Ana `.h5` model dosyaları normal Git yerine Git LFS üzerinden paylaşılır.
 
 ## Lisans
 

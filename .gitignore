@@ -64,7 +64,13 @@ data/external/*
 data/models/*
 !data/models/.gitkeep
 !data/models/training_results.json
+!data/models/xception_finetuned.h5
+!data/models/efficientnet_finetuned.h5
+
+# Keep ad-hoc model artifacts out of normal Git.
 *.h5
+!data/models/xception_finetuned.h5
+!data/models/efficientnet_finetuned.h5
 *.hdf5
 *.keras
 *.weights.h5
