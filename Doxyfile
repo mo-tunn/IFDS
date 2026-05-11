@@ -1,0 +1,15 @@
+PROJECT_NAME           = "Image Forgery Detection System"
+PROJECT_NUMBER         = 1.0
+OUTPUT_DIRECTORY       = docs/doxygen
+INPUT                  = src app.py ui config
+RECURSIVE              = YES
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+HAVE_DOT               = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+DOT_IMAGE_FORMAT       = svg
+QUIET                  = YES
+WARN_IF_UNDOCUMENTED   = YES

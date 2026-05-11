@@ -1,0 +1,81 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# Python packaging and build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Test, coverage, and quality reports
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.tox/
+
+# Logs and runtime files
+logs/
+*.log
+*.tmp
+*.temp
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
+
+# Generated documentation
+docs/doxygen/
+
+# Local datasets and generated image artifacts
+data/raw/*
+data/processed/*
+data/interim/*
+data/external/*
+!data/.gitkeep
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Model weights and training outputs are usually too large for Git.
+data/models/*
+!data/models/.gitkeep
+!data/models/training_results.json
+*.h5
+*.hdf5
+*.keras
+*.weights.h5
+*.onnx
+*.tflite
+checkpoints/
+runs/
+wandb/
+mlruns/
+
+# Generated reports / exports
+reports/
+outputs/
+exports/

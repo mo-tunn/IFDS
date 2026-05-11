@@ -1,0 +1,32 @@
+:root {
+  --ifds-primary: #1F3864;
+  --ifds-secondary: #2E75B6;
+  --ifds-success: #1B7F4C;
+  --ifds-danger: #B42318;
+  --ifds-surface: #F7FAFD;
+}
+
+.stApp {
+  background: #F7FAFD;
+}
+
+h1, h2, h3 {
+  color: var(--ifds-primary);
+}
+
+[data-testid="stSidebar"] {
+  background: #EDF4FB;
+}
+
+.stButton > button {
+  border-radius: 6px;
+  border: 1px solid var(--ifds-secondary);
+  background: var(--ifds-primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+.stDownloadButton > button {
+  border-radius: 6px;
+  border: 1px solid var(--ifds-secondary);
+}
