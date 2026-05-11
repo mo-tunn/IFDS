@@ -85,6 +85,17 @@ pip install -r requirements-dev.txt
 pytest tests -v --cov=src --cov-report=xml
 ```
 
+## CI ve SonarQube
+
+GitHub Actions workflow'u testleri her push ve pull request için çalıştırır. SonarQube taraması için repository secrets altında şu değerler tanımlı olmalıdır:
+
+```text
+SONAR_TOKEN
+SONAR_HOST_URL
+```
+
+Bu secrets tanımlı değilse SonarQube adımı atlanır; test adımı çalışmaya devam eder.
+
 ## Eğitim Notları
 
 `notebooks/` klasöründe Kaggle/CASIA veri setiyle model eğitimi için hazırlanmış notebook'lar bulunur. Yerel veri setlerinizi `data/raw/` altında tutabilirsiniz; bu klasör GitHub'a gönderilmez.
@@ -97,4 +108,4 @@ pytest tests -v --cov=src --cov-report=xml
 
 ## Lisans
 
-Bu projeyi yayınlamadan önce uygun lisans dosyasını (`LICENSE`) eklemeniz önerilir.
+Bu proje MIT lisansı ile yayınlanır. Ayrıntılar için `LICENSE` dosyasına bakın.
