@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import io
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -60,10 +61,44 @@ def test_preprocess_shapes_and_ranges(png_bytes: bytes) -> None:
     xception = ImageLoader.preprocess_for_xception(image)
     efficientnet = ImageLoader.preprocess_for_efficientnet(image)
     legacy_second_model = ImageLoader.preprocess_for_lstm(image)
+    custom = ImageLoader.preprocess_for_model(image, (32, 48))
 
     assert xception.shape == (224, 224, 3)
     assert efficientnet.shape == (224, 224, 3)
     assert legacy_second_model.shape == efficientnet.shape
+    assert custom.shape == (48, 32, 3)
     assert xception.dtype == np.float32
     assert efficientnet.dtype == np.float32
     assert 0.0 <= float(xception.min()) <= float(xception.max()) <= 1.0
+
+
+def test_load_from_path_and_invalid_path_cases(tmp_path: Path, png_bytes: bytes) -> None:
+    image_path = tmp_path / "sample.png"
+    image_path.write_bytes(png_bytes)
+
+    image, metadata = ImageLoader.load_from_path(image_path)
+
+    assert image.shape[2] == 3
+    assert metadata["filename"] == "sample.png"
+    with pytest.raises(FileNotFoundError):
+        ImageLoader.load_from_path(tmp_path / "missing.png")
+    with pytest.raises(ValueError, match="Geçerli bir dosya değil"):
+        ImageLoader.load_from_path(tmp_path)
+
+
+def test_decode_bytes_falls_back_to_pillow(monkeypatch: pytest.MonkeyPatch, png_bytes: bytes) -> None:
+    monkeypatch.setattr(image_loader_module.cv2, "imdecode", lambda *_args, **_kwargs: None)
+
+    image = ImageLoader._decode_bytes(png_bytes, ".png")
+
+    assert image.shape[2] == 3
+
+
+def test_private_validation_helpers_cover_edge_cases(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(image_loader_module, "MAX_FILE_SIZE_BYTES", 4)
+    with pytest.raises(ValueError, match="Dosya boş"):
+        ImageLoader._validate_size(0)
+    with pytest.raises(ValueError, match="Dosya çok büyük"):
+        ImageLoader._validate_size(5)
+    with pytest.raises(ValueError, match="RGB ve 3 kanallı"):
+        ImageLoader.preprocess_for_model(np.zeros((4, 4), dtype=np.uint8))

@@ -99,3 +99,49 @@ def test_low_confidence_orb_does_not_create_authentic_evidence() -> None:
     assert verdict.label == "Review needed"
     assert verdict.authentic_score == 0.0
     assert verdict.signals[0].verdict == "Uncertain"
+
+
+def test_verdict_can_return_authentic_and_medium_suspicion() -> None:
+    authentic = VerdictService.evaluate(
+        {
+            "classical": {
+                "AKAZE": DetectionResult(
+                    algorithm="AKAZE",
+                    is_forged=False,
+                    confidence=0.80,
+                    match_count=40,
+                    total_keypoints=200,
+                    processing_time=0.1,
+                )
+            },
+            "ai": {},
+        }
+    )
+    medium = VerdictService.evaluate(
+        {
+            "classical": {
+                "SIFT": DetectionResult(
+                    algorithm="SIFT",
+                    is_forged=True,
+                    confidence=0.60,
+                    match_count=40,
+                    total_keypoints=200,
+                    processing_time=0.1,
+                )
+            },
+            "ai": {
+                "Xception": AIDetectionResult(
+                    model_name="Xception",
+                    is_forged=False,
+                    confidence=0.58,
+                    class_label="Authentic",
+                    processing_time=0.1,
+                )
+            },
+        }
+    )
+
+    assert authentic.label == "Authentic"
+    assert "No strong tampering signal" in authentic.summary
+    assert medium.label == "Tampered"
+    assert medium.level == "Medium suspicion"
