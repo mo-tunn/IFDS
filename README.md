@@ -19,7 +19,7 @@ IFDS, görüntü manipülasyonu tespiti için geliştirilen Streamlit tabanlı b
 
 ### Analiz Sonucu
 
-![IFDS analiz örnek görseli](tests/edited-photo.jpg)
+![IFDS analiz ekranı](docs/quality_outputs/frontend/ifds_frontend_analysis.png)
 
 ### Mobil Görünüm
 
