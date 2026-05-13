@@ -68,15 +68,17 @@ class ReportGenerator:
         """
         try:
             from fpdf import FPDF
+            from fpdf.enums import XPos, YPos
         except ImportError as exc:
             raise ImportError("PDF raporu için fpdf2 kurulmalı.") from exc
 
         pdf = FPDF()
+        font_family, bold_style = self._configure_pdf_fonts(pdf)
         pdf.set_auto_page_break(auto=True, margin=15)
         pdf.add_page()
-        pdf.set_font("Helvetica", "B", 16)
+        pdf.set_font(font_family, bold_style, 16)
         pdf.set_text_color(31, 56, 100)
-        pdf.cell(0, 10, "IFDS Image Forgery Detection Report", ln=True)
+        pdf.cell(0, 10, "IFDS Image Forgery Detection Report", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         pdf.set_text_color(0, 0, 0)
         final_verdict = self._final_verdict(results)
 
@@ -86,44 +88,53 @@ class ReportGenerator:
             pdf.image(str(image_path), x=10, y=25, w=65)
 
             pdf.set_xy(82, 25)
-            pdf.set_font("Helvetica", "B", 11)
-            pdf.cell(0, 8, "Image Metadata", ln=True)
-            pdf.set_font("Helvetica", "", 9)
+            pdf.set_font(font_family, bold_style, 11)
+            pdf.cell(0, 8, "Image Metadata", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+            pdf.set_font(font_family, "", 9)
             for key, value in metadata.items():
                 pdf.set_x(82)
-                pdf.multi_cell(0, 6, f"{key}: {value}")
+                pdf.multi_cell(0, 6, self._pdf_text(f"{key}: {value}", font_family))
 
+        pdf.set_x(10)
         pdf.ln(12)
-        pdf.set_font("Helvetica", "B", 12)
-        pdf.cell(0, 8, "Final Verdict", ln=True)
-        pdf.set_font("Helvetica", "", 9)
+        pdf.set_font(font_family, bold_style, 12)
+        pdf.cell(0, 8, "Final Verdict", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        pdf.set_x(10)
+        pdf.set_font(font_family, "", 9)
         pdf.multi_cell(
             0,
             6,
-            f"{final_verdict.label} - {final_verdict.level} | "
-            f"Weighted tampering score: {final_verdict.score * 100:.1f}%",
+            self._pdf_text(
+                f"{final_verdict.label} - {final_verdict.level} | "
+                f"Weighted tampering score: {final_verdict.score * 100:.1f}%",
+                font_family,
+            ),
         )
-        pdf.multi_cell(0, 6, final_verdict.summary)
+        pdf.set_x(10)
+        pdf.multi_cell(0, 6, self._pdf_text(final_verdict.summary, font_family))
 
         pdf.ln(3)
-        pdf.set_font("Helvetica", "B", 12)
-        pdf.cell(0, 8, "Classical Analysis", ln=True)
-        self._write_result_rows(pdf, self._normalize_results(results.get("classical", {})))
+        pdf.set_x(10)
+        pdf.set_font(font_family, bold_style, 12)
+        pdf.cell(0, 8, "Classical Analysis", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        self._write_result_rows(pdf, self._normalize_results(results.get("classical", {})), font_family, bold_style)
 
         pdf.ln(3)
-        pdf.set_font("Helvetica", "B", 12)
-        pdf.cell(0, 8, "AI Analysis", ln=True)
-        self._write_result_rows(pdf, self._normalize_results(results.get("ai", {})))
+        pdf.set_x(10)
+        pdf.set_font(font_family, bold_style, 12)
+        pdf.cell(0, 8, "AI Analysis", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        self._write_result_rows(pdf, self._normalize_results(results.get("ai", {})), font_family, bold_style)
 
         pdf.ln(3)
-        pdf.set_font("Helvetica", "", 9)
+        pdf.set_x(10)
+        pdf.set_font(font_family, "", 9)
         pdf.multi_cell(0, 6, f"Total processing time: {results.get('processing_time', 0.0):.3f} seconds")
 
         visuals = self._collect_visual_arrays(results)
         if visuals:
             pdf.add_page()
-            pdf.set_font("Helvetica", "B", 12)
-            pdf.cell(0, 8, "Visual Evidence", ln=True)
+            pdf.set_font(font_family, bold_style, 12)
+            pdf.cell(0, 8, "Visual Evidence", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
             with tempfile.TemporaryDirectory() as tmp_dir:
                 x_pos = 10
                 y_pos = 25
@@ -135,16 +146,18 @@ class ReportGenerator:
                     image_path = Path(tmp_dir) / f"visual_{index}.png"
                     Image.fromarray(visual.astype(np.uint8)).save(image_path)
                     pdf.set_xy(x_pos, y_pos - 6)
-                    pdf.set_font("Helvetica", "", 9)
-                    pdf.cell(85, 5, title)
+                    pdf.set_font(font_family, "", 9)
+                    pdf.cell(85, 5, self._pdf_text(title, font_family))
                     pdf.image(str(image_path), x=x_pos, y=y_pos, w=85)
                     x_pos = 105 if x_pos == 10 else 10
                     if x_pos == 10:
                         y_pos += 80
 
-        output = pdf.output(dest="S")
+        output = pdf.output()
         if isinstance(output, bytes):
             return output
+        if isinstance(output, bytearray):
+            return bytes(output)
         return output.encode("latin-1")
 
     def generate(
@@ -162,10 +175,19 @@ class ReportGenerator:
         """
         return self.generate_pdf(image, metadata, results)
 
-    def _write_result_rows(self, pdf: Any, rows: list[dict[str, Any]]) -> None:
+    def _write_result_rows(
+        self,
+        pdf: Any,
+        rows: list[dict[str, Any]],
+        font_family: str = "Helvetica",
+        bold_style: str = "B",
+    ) -> None:
+        from fpdf.enums import XPos, YPos
+
         if not rows:
-            pdf.set_font("Helvetica", "", 9)
-            pdf.cell(0, 6, "No result produced.", ln=True)
+            pdf.set_x(10)
+            pdf.set_font(font_family, "", 9)
+            pdf.cell(0, 6, "No result produced.", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
             return
 
         for row in rows:
@@ -174,19 +196,33 @@ class ReportGenerator:
             confidence = float(row.get("confidence") or 0.0)
             duration = float(row.get("processing_time") or 0.0)
             error = row.get("error_message")
-            pdf.set_font("Helvetica", "B", 10)
-            pdf.cell(0, 6, str(name), ln=True)
-            pdf.set_font("Helvetica", "", 9)
-            pdf.multi_cell(0, 6, f"Verdict: {label} | Confidence: {confidence * 100:.1f}% | Time: {duration:.3f}s")
+            pdf.set_x(10)
+            pdf.set_font(font_family, bold_style, 10)
+            pdf.cell(0, 6, self._pdf_text(str(name), font_family), new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+            pdf.set_x(10)
+            pdf.set_font(font_family, "", 9)
+            pdf.multi_cell(
+                0,
+                6,
+                self._pdf_text(
+                    f"Verdict: {label} | Confidence: {confidence * 100:.1f}% | Time: {duration:.3f}s",
+                    font_family,
+                ),
+            )
             if "match_count" in row:
+                pdf.set_x(10)
                 pdf.multi_cell(
                     0,
                     6,
-                    f"Matches: {row.get('match_count', 0)} | Keypoints: {row.get('total_keypoints', 0)}",
+                    self._pdf_text(
+                        f"Matches: {row.get('match_count', 0)} | Keypoints: {row.get('total_keypoints', 0)}",
+                        font_family,
+                    ),
                 )
             if error:
+                pdf.set_x(10)
                 pdf.set_text_color(180, 35, 24)
-                pdf.multi_cell(0, 6, f"Note: {error}")
+                pdf.multi_cell(0, 6, self._pdf_text(f"Note: {error}", font_family))
                 pdf.set_text_color(0, 0, 0)
 
     def _normalize_results(self, results: dict[str, Any]) -> list[dict[str, Any]]:
@@ -204,6 +240,37 @@ class ReportGenerator:
             row.pop("overlay_image", None)
             normalized.append(row)
         return normalized
+
+    @staticmethod
+    def _configure_pdf_fonts(pdf: Any) -> tuple[str, str]:
+        regular_candidates = [
+            Path("C:/Windows/Fonts/arial.ttf"),
+            Path("C:/Windows/Fonts/segoeui.ttf"),
+            Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
+        ]
+        bold_candidates = [
+            Path("C:/Windows/Fonts/arialbd.ttf"),
+            Path("C:/Windows/Fonts/segoeuib.ttf"),
+            Path("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"),
+        ]
+        regular = next((path for path in regular_candidates if path.exists()), None)
+        if regular is None:
+            return "Helvetica", "B"
+
+        family = "IFDSUnicode"
+        pdf.add_font(family, "", str(regular))
+        bold = next((path for path in bold_candidates if path.exists()), None)
+        if bold is not None:
+            pdf.add_font(family, "B", str(bold))
+            return family, "B"
+        return family, ""
+
+    @staticmethod
+    def _pdf_text(value: object, font_family: str) -> str:
+        text = str(value)
+        if font_family != "Helvetica":
+            return text
+        return text.encode("latin-1", errors="replace").decode("latin-1")
 
     def _collect_visuals(self, results: dict[str, Any]) -> list[dict[str, str]]:
         visuals = []

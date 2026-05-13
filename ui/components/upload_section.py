@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from config.settings import STREAMLIT_UPLOAD_EXTENSIONS
+from config.settings import MAX_FILE_SIZE_MB, STREAMLIT_UPLOAD_EXTENSIONS
 
 
 def render_upload_section():
@@ -16,7 +16,8 @@ def render_upload_section():
     import streamlit as st
 
     return st.file_uploader(
-        "Analiz edilecek görüntüyü yükleyin",
+        "Görüntü dosyası",
         type=STREAMLIT_UPLOAD_EXTENSIONS,
-        help="GIF, JPG/JPEG, PNG, BMP ve TIFF desteklenir. Maksimum 50 MB.",
+        help=f"GIF, JPG/JPEG, PNG, BMP ve TIFF desteklenir. Maksimum {MAX_FILE_SIZE_MB} MB.",
+        label_visibility="collapsed",
     )

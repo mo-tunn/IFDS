@@ -45,4 +45,18 @@ def render_comparison_table(results: dict[str, Any]) -> None:
     if not rows:
         st.info("Karşılaştırma için sonuç yok.")
         return
-    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+    df = pd.DataFrame(rows)
+    st.dataframe(
+        df,
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "Type": st.column_config.TextColumn("Type", width="small"),
+            "Name": st.column_config.TextColumn("Name", width="medium"),
+            "Verdict": st.column_config.TextColumn("Verdict", width="medium"),
+            "Confidence": st.column_config.TextColumn("Confidence", width="small"),
+            "Time (s)": st.column_config.TextColumn("Time (s)", width="small"),
+            "Evidence": st.column_config.TextColumn("Evidence", width="medium"),
+            "Note": st.column_config.TextColumn("Note", width="large"),
+        },
+    )
