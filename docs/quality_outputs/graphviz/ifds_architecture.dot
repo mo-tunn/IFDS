@@ -1,0 +1,66 @@
+digraph IFDSArchitecture {
+  graph [
+    rankdir=LR,
+    bgcolor="white",
+    pad="0.35",
+    nodesep="0.6",
+    ranksep="0.85",
+    fontname="Calibri",
+    labelloc="t",
+    label="IFDS - Image Forgery Detection System Architecture"
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontname="Calibri",
+    fontsize=11,
+    color="#2b3a42",
+    fillcolor="#f7f9fb",
+    margin="0.12,0.08"
+  ];
+
+  edge [
+    color="#536872",
+    arrowsize=0.75,
+    fontname="Calibri",
+    fontsize=10
+  ];
+
+  user [label="User\nImage upload, algorithm selection,\nreport download", fillcolor="#e8f3ff"];
+  app [label="app.py\nStreamlit entry point", fillcolor="#dff3e3"];
+  ui [label="ui/components\nUpload, result grid,\nverdict, heatmap, table", fillcolor="#eef7e9"];
+  settings [label="config/settings.py\nPaths, limits,\nmodel configuration", fillcolor="#fff4d6"];
+  loader [label="src/preprocessing/ImageLoader\nFormat validation,\nmetadata, preprocessing", fillcolor="#fff4d6"];
+  service [label="src/analysis_service.py\nOrchestrates selected analysis", fillcolor="#dff3e3"];
+  classical [label="src/classical\nSIFT, SURF, AKAZE, ORB", fillcolor="#f4e9ff"];
+  feature_utils [label="feature_utils.py\nMatching, scoring,\nmask and annotation", fillcolor="#f4e9ff"];
+  ai [label="src/ai_models\nXception CNN,\nEfficientNet CNN", fillcolor="#ffe9e2"];
+  gradcam [label="gradcam.py\nHeatmap and overlay", fillcolor="#ffe9e2"];
+  verdict [label="src/verdict.py\nWeighted final decision", fillcolor="#dff3e3"];
+  reporting [label="src/reporting/ReportGenerator\nPDF and HTML report", fillcolor="#e8f3ff"];
+  tests [label="tests\nPytest and coverage", fillcolor="#f1f1f1"];
+  sonar [label="SonarQube\nCode quality dashboard", fillcolor="#f1f1f1"];
+  doxygen [label="Doxygen + Graphviz\nHTML, PDF and call graphs", fillcolor="#f1f1f1"];
+
+  user -> app;
+  app -> ui;
+  app -> settings;
+  app -> loader;
+  app -> service;
+  loader -> service [label="RGB image"];
+  service -> classical;
+  classical -> feature_utils;
+  service -> ai;
+  ai -> gradcam;
+  service -> verdict;
+  verdict -> ui;
+  service -> reporting;
+  reporting -> user [label="PDF/HTML output"];
+  tests -> sonar [label="coverage.xml"];
+  app -> doxygen;
+  service -> doxygen;
+  classical -> doxygen;
+  ai -> doxygen;
+  reporting -> doxygen;
+}
