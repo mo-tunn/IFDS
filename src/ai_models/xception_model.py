@@ -88,7 +88,7 @@ class XceptionForensicModel:
         """
         model_path = Path(path) if path is not None else self.model_path
         if not model_path.exists():
-            raise FileNotFoundError(f"Xception model ağırlığı bulunamadı: {model_path}")
+            raise FileNotFoundError(f"Xception model weights were not found: {model_path}")
 
         tf = self._tensorflow()
         try:
@@ -104,7 +104,7 @@ class XceptionForensicModel:
         @raises RuntimeError When the model has not been built.
         """
         if self.model is None:
-            raise RuntimeError("Önce build_model() çağırılmalı.")
+            raise RuntimeError("build_model() must be called first.")
         tf = self._tensorflow()
         from tensorflow.keras import optimizers
 
@@ -138,7 +138,7 @@ class XceptionForensicModel:
         @raises RuntimeError When the model has not been loaded.
         """
         if self.model is None:
-            raise RuntimeError("Xception modeli yüklenmedi. Önce load_weights() çağrılmalı.")
+            raise RuntimeError("Xception model is not loaded. Call load_weights() first.")
         start = time.perf_counter()
         batch = np.expand_dims(image.astype(np.float32), axis=0)
         prediction = self.model.predict(batch, verbose=0)
@@ -174,5 +174,5 @@ class XceptionForensicModel:
         try:
             import tensorflow as tf
         except ImportError as exc:
-            raise ImportError("TensorFlow yüklü değil. AI inference için requirements.txt kurulmalı.") from exc
+            raise ImportError("TensorFlow is not installed. Install requirements.txt for AI inference.") from exc
         return tf

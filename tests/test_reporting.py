@@ -127,5 +127,5 @@ def test_generate_pdf_reports_missing_fpdf(monkeypatch: pytest.MonkeyPatch, samp
 
     monkeypatch.setattr(builtins, "__import__", raising_import)
 
-    with pytest.raises(ImportError, match="PDF raporu"):
+    with pytest.raises(ImportError, match="fpdf2 must be installed"):
         ReportGenerator().generate_pdf(sample_rgb_image, {"filename": "sample.png"}, {"classical": {}, "ai": {}})

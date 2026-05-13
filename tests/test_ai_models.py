@@ -59,9 +59,9 @@ def test_efficientnet_predict_with_mock_backend() -> None:
 
 
 def test_predict_requires_loaded_model() -> None:
-    with pytest.raises(RuntimeError, match="Xception modeli yüklenmedi"):
+    with pytest.raises(RuntimeError, match="Xception model is not loaded"):
         XceptionForensicModel().predict(np.zeros((224, 224, 3), dtype=np.float32))
-    with pytest.raises(RuntimeError, match="EfficientNet modeli yüklenmedi"):
+    with pytest.raises(RuntimeError, match="EfficientNet model is not loaded"):
         EfficientNetForensicModel().predict(np.zeros((224, 224, 3), dtype=np.float32))
 
 
@@ -254,7 +254,7 @@ def test_efficientnet_compatible_suffix_requires_built_model(tmp_path: Path) -> 
     weights = tmp_path / "efficientnet.h5"
     weights.write_bytes(b"placeholder")
 
-    with pytest.raises(RuntimeError, match="build edilmeden"):
+    with pytest.raises(RuntimeError, match="before the model is built"):
         EfficientNetForensicModel(weights)._load_keras_v3_weights_with_compatible_suffix(weights)
 
 

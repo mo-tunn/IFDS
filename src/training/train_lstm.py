@@ -17,7 +17,7 @@ def train() -> None:
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
     model = EfficientNetForensicModel().build_model(imagenet_weights=True)
     raise NotImplementedError(
-        "Use notebooks/IFDS_Kaggle_EfficientNet_CNN_Egitimi.ipynb for EfficientNet training. "
+        "Use notebooks/IFDS_Kaggle_EfficientNet_CNN_Training.ipynb for EfficientNet training. "
         f"Model skeleton ready: {model.name}; target path: {EFFICIENTNET_MODEL_PATH}"
     )
 

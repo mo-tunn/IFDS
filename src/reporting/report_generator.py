@@ -70,7 +70,7 @@ class ReportGenerator:
             from fpdf import FPDF
             from fpdf.enums import XPos, YPos
         except ImportError as exc:
-            raise ImportError("PDF raporu için fpdf2 kurulmalı.") from exc
+            raise ImportError("fpdf2 must be installed to generate PDF reports.") from exc
 
         pdf = FPDF()
         font_family, bold_style = self._configure_pdf_fonts(pdf)
@@ -322,7 +322,7 @@ class ReportGenerator:
     def _html_template() -> str:
         return """
 <!doctype html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>IFDS Report</title>

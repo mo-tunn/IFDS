@@ -108,5 +108,5 @@ def test_run_ai_captures_gradcam_error(monkeypatch, sample_rgb_image) -> None:
         AnalysisSelection(run_xception=True, run_efficientnet=False, run_gradcam=True),
     )
 
-    assert results["Xception"].error_message == "Grad-CAM üretilemedi: first line"
+    assert results["Xception"].error_message == "Grad-CAM could not be generated: first line"
     assert AnalysisService._short_error(RuntimeError("x" * 300), max_length=10) == "x" * 10

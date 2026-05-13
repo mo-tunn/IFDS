@@ -16,8 +16,8 @@ def render_upload_section():
     import streamlit as st
 
     return st.file_uploader(
-        "Görüntü dosyası",
+        "Image file",
         type=STREAMLIT_UPLOAD_EXTENSIONS,
-        help=f"GIF, JPG/JPEG, PNG, BMP ve TIFF desteklenir. Maksimum {MAX_FILE_SIZE_MB} MB.",
+        help=f"GIF, JPG/JPEG, PNG, BMP, and TIFF are supported. Maximum size: {MAX_FILE_SIZE_MB} MB.",
         label_visibility="collapsed",
     )

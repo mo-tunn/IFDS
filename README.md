@@ -9,49 +9,49 @@
 ![Duplications](https://img.shields.io/badge/duplications-3.0%25-blue)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 
-IFDS, görüntü manipülasyonu tespiti için geliştirilen Streamlit tabanlı bir analiz uygulamasıdır. Sistem; SIFT, SURF, AKAZE ve ORB gibi klasik OpenCV tabanlı özellik eşleştirme yöntemlerini isteğe bağlı derin öğrenme modelleriyle birlikte çalıştırır. Yüklenen görsel için algoritma bazlı bulgular, nihai karar, karşılaştırmalı analiz tablosu ve indirilebilir PDF/HTML rapor üretir.
+IFDS is a Streamlit-based image forgery analysis application. It combines classical OpenCV feature-matching methods such as SIFT, SURF, AKAZE, and ORB with optional deep learning models. For each uploaded image, the system produces algorithm-level evidence, a weighted final verdict, a comparative analysis table, and downloadable PDF/HTML reports.
 
-## Ekran Görüntüleri
+## Screenshots
 
-### Uygulama Ana Ekranı
+### Application Home
 
-![IFDS ana ekran](docs/quality_outputs/frontend/ifds_frontend_home.png)
+![IFDS application home](docs/quality_outputs/frontend/ifds_frontend_home.png)
 
-### Analiz Sonucu
+### Analysis Result
 
-![IFDS analiz ekranı](docs/quality_outputs/frontend/ifds_frontend_analysis.png)
+![IFDS analysis result](docs/quality_outputs/frontend/ifds_frontend_analysis.png)
 
-### Mobil Görünüm
+### Mobile View
 
-![IFDS mobil görünüm](docs/quality_outputs/frontend/ifds_frontend_mobile.png)
+![IFDS mobile view](docs/quality_outputs/frontend/ifds_frontend_mobile.png)
 
-### Scrum Tablosu
+### Scrum Board
 
-![IFDS Scrum tablosu](docs/quality_outputs/scrum/ifds_scrum_table.png)
+![IFDS Scrum board](docs/quality_outputs/scrum/ifds_scrum_table.png)
 
 ### SonarQube Dashboard
 
 ![SonarQube dashboard](docs/quality_outputs/sonarqube/sonarqube_dashboard.png)
 
-### Graphviz Mimari Grafiği
+### Graphviz Architecture Graph
 
-![IFDS mimari grafiği](docs/quality_outputs/graphviz/ifds_architecture.png)
+![IFDS architecture graph](docs/quality_outputs/graphviz/ifds_architecture.png)
 
-## Öne Çıkan Özellikler
+## Key Features
 
-- Klasik analiz: SIFT, SURF, AKAZE ve ORB dedektörleri.
-- AI analiz: Xception CNN ve EfficientNet CNN modelleri için opsiyonel destek.
-- Açıklanabilirlik: Xception sonucu için Grad-CAM ısı haritası üretimi.
-- Nihai karar: `Authentic`, `Tampered` veya `Review needed` etiketleri için ağırlıklı karar mekanizması.
-- Raporlama: Görsel metadata, algoritma sonuçları, karşılaştırma tablosu ve final verdict içeren PDF/HTML raporlar.
-- Kullanıcı arayüzü: Modern Streamlit dashboard, durum kartları, analiz seçimi, sonuç kartları ve responsive görünüm.
-- Desteklenen formatlar: GIF, JPG/JPEG, PNG, BMP ve TIFF.
+- Classical analysis with SIFT, SURF, AKAZE, and ORB detectors.
+- Optional AI analysis with Xception CNN and EfficientNet CNN model wrappers.
+- Explainability support through Grad-CAM heatmaps for Xception results.
+- Weighted final verdict labels: `Authentic`, `Tampered`, or `Review needed`.
+- PDF/HTML reports with image metadata, algorithm results, comparison data, and final verdict details.
+- Modern Streamlit dashboard with status cards, analysis controls, result cards, and responsive layout.
+- Supported input formats: GIF, JPG/JPEG, PNG, BMP, and TIFF.
 
-## Kalite Özeti
+## Quality Summary
 
-| Araç / Metrik | Sonuç |
+| Tool / Metric | Result |
 | --- | --- |
-| Pytest | 58 test geçti |
+| Pytest | 58 tests passed |
 | Pytest coverage | 95.01% |
 | SonarQube Quality Gate | Passed / OK |
 | SonarQube coverage | 94.8% |
@@ -65,37 +65,37 @@ IFDS, görüntü manipülasyonu tespiti için geliştirilen Streamlit tabanlı b
 | Security Rating | A |
 | Maintainability Rating | A |
 
-SonarQube çalıştırma notları ve analiz kanıtı:
+SonarQube notes and evidence:
 
-- [SonarQube analiz durumu](docs/quality_outputs/sonarqube/SONARQUBE_ANALYSIS_STATUS.md)
-- [SonarQube dashboard ekran görüntüsü](docs/quality_outputs/sonarqube/sonarqube_dashboard.png)
+- [SonarQube analysis status](docs/quality_outputs/sonarqube/SONARQUBE_ANALYSIS_STATUS.md)
+- [SonarQube dashboard screenshot](docs/quality_outputs/sonarqube/sonarqube_dashboard.png)
 - [Coverage XML](docs/quality_outputs/sonarqube/coverage.xml)
 
-## Proje Yapısı
+## Project Structure
 
 ```text
 .
-├── app.py                  # Streamlit uygulama giriş noktası
-├── config/                 # Uygulama ayarları ve model yolları
+├── app.py                  # Streamlit application entrypoint
+├── config/                 # Application settings and model paths
 ├── data/
-│   ├── raw/                # Yerel ham veri setleri
-│   ├── processed/          # İşlenmiş veri çıktıları
-│   └── models/             # Model ağırlıkları
-├── docs/                   # Dokümantasyon ve teslim çıktıları
-├── notebooks/              # Eğitim notebook'ları
+│   ├── raw/                # Local raw datasets
+│   ├── processed/          # Processed local outputs
+│   └── models/             # Model weights
+├── docs/                   # Documentation and delivery evidence
+├── notebooks/              # Training notebooks
 ├── src/
-│   ├── ai_models/          # Xception, EfficientNet ve Grad-CAM bileşenleri
-│   ├── classical/          # SIFT, SURF, AKAZE, ORB dedektörleri
-│   ├── preprocessing/      # Görüntü yükleme ve ön işleme
-│   ├── reporting/          # PDF/HTML rapor üretimi
-│   └── verdict.py          # Nihai karar hesaplama servisi
-├── tests/                  # Pytest testleri
-└── ui/                     # Streamlit arayüz bileşenleri
+│   ├── ai_models/          # Xception, EfficientNet, and Grad-CAM components
+│   ├── classical/          # SIFT, SURF, AKAZE, and ORB detectors
+│   ├── preprocessing/      # Image loading and preprocessing
+│   ├── reporting/          # PDF/HTML report generation
+│   └── verdict.py          # Final verdict service
+├── tests/                  # Pytest test suite
+└── ui/                     # Streamlit UI components
 ```
 
-## Kurulum
+## Installation
 
-Python 3.10 veya üzeri önerilir.
+Python 3.10 or newer is recommended.
 
 ```bash
 python -m venv .venv
@@ -103,57 +103,57 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-macOS/Linux için aktivasyon:
+For macOS/Linux activation:
 
 ```bash
 source .venv/bin/activate
 ```
 
-Geliştirme ve test bağımlılıkları gerekiyorsa:
+Install development and test dependencies when needed:
 
 ```bash
 pip install -r requirements-dev.txt
 ```
 
-## Uygulamayı Çalıştırma
+## Running The App
 
 ```bash
 streamlit run app.py
 ```
 
-Alternatif olarak Windows sanal ortamı içinden:
+Windows virtual environment alternative:
 
 ```bash
 .venv\Scripts\python.exe -m streamlit run app.py
 ```
 
-Uygulama açıldıktan sonra sol menüden analiz yöntemleri seçilir, desteklenen formatta bir görüntü yüklenir ve `Analizi Başlat` düğmesiyle sonuçlar üretilir.
+After the app opens, select the analysis methods from the sidebar, upload a supported image, and press `Start Analysis`.
 
-## Test ve Coverage
+## Tests And Coverage
 
 ```bash
 python -m pytest tests -q --cov=src --cov-report=xml --cov-report=term-missing
 ```
 
-Son doğrulama sonucu:
+Latest verification result:
 
 ```text
 58 passed
 TOTAL: 1202 statements, 60 missing, 95.01% coverage
 ```
 
-## SonarQube Analizi
+## SonarQube Analysis
 
-Bu projede SonarQube için gerekli temel ayarlar [sonar-project.properties](sonar-project.properties) dosyasında hazırdır.
+The project includes the required SonarQube configuration in [sonar-project.properties](sonar-project.properties).
 
-Temel akış:
+Basic workflow:
 
 ```bash
 python -m pytest tests -q --cov=src --cov-report=xml --cov-report=term-missing
 sonar-scanner.bat -Dsonar.host.url=http://localhost:9000 -Dsonar.token=<local-token>
 ```
 
-Son başarılı yerel analiz:
+Latest successful local analysis:
 
 ```text
 Quality Gate: OK / Passed
@@ -164,47 +164,47 @@ Security Hotspots: 0
 Duplications: 3.0%
 ```
 
-## Model Dosyaları
+## Model Files
 
-AI modelleri opsiyoneldir. Model ağırlıkları yoksa uygulama klasik algoritmalar ve raporlama akışıyla çalışmaya devam eder.
+AI models are optional. When model weights are missing, the application continues with classical analysis and reporting.
 
-Beklenen model yolları:
+Expected model paths:
 
 ```text
 data/models/xception_finetuned.h5
 data/models/efficientnet_finetuned.h5
 ```
 
-Repoyu klonladıktan sonra model dosyaları eksik görünürse Git LFS kullanın:
+If model files are missing after cloning the repository, use Git LFS:
 
 ```bash
 git lfs pull
 ```
 
-Eğitim metrikleri için [model_metrics.md](docs/model_metrics.md) dosyasına bakabilirsiniz.
+Training metrics are documented in [model_metrics.md](docs/model_metrics.md).
 
-## Teslim Dokümanları
+## Delivery Documents
 
-Proje ödevi kapsamında hazırlanan ana dokümanlar:
+Main project delivery artifacts prepared for the course:
 
-- [Kullanıcı El Kitapçığı](docs/Kullanici_El_Kitapcigi_IFDS.docx)
-- [FSM Emek Hesabı](docs/FSM_Emek_Hesabi_IFDS.docx)
+- [User Manual document](docs/Kullanici_El_Kitapcigi_IFDS.docx)
+- [FSM Effort Estimation document](docs/FSM_Emek_Hesabi_IFDS.docx)
 - [Doxygen PDF](docs/quality_outputs/doxygen/Doxygen_IFDS_Documentation.pdf)
-- [Graphviz mimari SVG](docs/quality_outputs/graphviz/ifds_architecture.svg)
-- [Graphviz mimari PDF](docs/quality_outputs/graphviz/ifds_architecture.pdf)
-- [Doxygen/Graphviz çağrı grafiği](docs/quality_outputs/graphviz/doxygen_representative_call_graph.svg)
-- [Scrum tablo ekran görüntüsü](docs/quality_outputs/scrum/ifds_scrum_table.png)
+- [Graphviz architecture SVG](docs/quality_outputs/graphviz/ifds_architecture.svg)
+- [Graphviz architecture PDF](docs/quality_outputs/graphviz/ifds_architecture.pdf)
+- [Doxygen/Graphviz call graph](docs/quality_outputs/graphviz/doxygen_representative_call_graph.svg)
+- [Scrum board screenshot](docs/quality_outputs/scrum/ifds_scrum_table.png)
 
-## Eğitim Notları
+## Training Notes
 
-`notebooks/` klasöründe Kaggle/CASIA veri setiyle model eğitimi için hazırlanmış notebook'lar bulunur. Yerel veri setleri `data/raw/` altında tutulabilir; bu klasör GitHub'a gönderilmez.
+The `notebooks/` directory contains notebooks prepared for model training with Kaggle/CASIA datasets. Local datasets can be kept under `data/raw/`; that directory is intentionally not committed.
 
-## GitHub'a Göndermeden Önce
+## Before Pushing To GitHub
 
-- `.env`, Streamlit secrets, sanal ortamlar, veri setleri ve büyük model ağırlıkları repoya eklenmemelidir.
-- `data/raw/`, `data/processed/` ve `data/models/` klasörleri yerel çalışma alanı için ayrılmıştır.
-- Büyük `.h5` model dosyaları gerekiyorsa normal Git yerine Git LFS ile paylaşılmalıdır.
+- Do not commit `.env` files, Streamlit secrets, virtual environments, datasets, or large model weights.
+- `data/raw/`, `data/processed/`, and `data/models/` are reserved for local work.
+- Large `.h5` model files should be shared through Git LFS instead of normal Git history.
 
-## Lisans
+## License
 
-Bu proje MIT lisansı ile yayınlanır. Ayrıntılar için `LICENSE` dosyasına bakın.
+This project is released under the MIT License. See the `LICENSE` file for details.

@@ -90,7 +90,7 @@ def _render_page_header() -> None:
           <div>
             <span class="ifds-eyebrow">Image Forgery Detection System</span>
             <h1>IFDS Analysis Console</h1>
-            <p>SIFT, SURF, AKAZE, ORB ve AI modelleriyle görüntü manipülasyonu inceleme paneli.</p>
+            <p>Image manipulation analysis workspace powered by SIFT, SURF, AKAZE, ORB, and optional AI models.</p>
           </div>
           <div class="ifds-header-badges">
             <span>Classical</span>
@@ -126,8 +126,8 @@ def _render_upload_shell() -> Any:
         <div class="ifds-section-label">
           <span>1</span>
           <div>
-            <strong>Görüntü yükle</strong>
-            <p>JPG, PNG, GIF, BMP veya TIFF dosyası seç.</p>
+            <strong>Upload image</strong>
+            <p>Choose a JPG, PNG, GIF, BMP, or TIFF file.</p>
           </div>
         </div>
         """,
@@ -140,8 +140,8 @@ def _render_analysis_prompt() -> None:
     st.markdown(
         """
         <div class="ifds-empty-state">
-          <strong>Analiz için bir görüntü bekleniyor</strong>
-          <span>Dosya yüklendiğinde önizleme, metadata ve analiz kontrolleri burada açılır.</span>
+          <strong>Waiting for an image</strong>
+          <span>Upload a file to reveal the preview, metadata, and analysis controls.</span>
         </div>
         """,
         unsafe_allow_html=True,
@@ -151,9 +151,9 @@ def _render_analysis_prompt() -> None:
 def _render_metadata_cards(metadata: dict[str, object]) -> None:
     items = [
         ("Format", metadata["format"]),
-        ("Boyut", f"{metadata['size_mb']:.3f} MB"),
-        ("Çözünürlük", f"{metadata['width']} x {metadata['height']}"),
-        ("Kanal", metadata["channels"]),
+        ("Size", f"{metadata['size_mb']:.3f} MB"),
+        ("Resolution", f"{metadata['width']} x {metadata['height']}"),
+        ("Channels", metadata["channels"]),
     ]
     cards = "\n".join(
         f"<div><span>{html.escape(str(label))}</span><strong>{html.escape(str(value))}</strong></div>"
@@ -177,16 +177,16 @@ def render_sidebar() -> AnalysisSelection:
     with st.sidebar:
         st.markdown("<div class='ifds-sidebar-brand'><strong>IFDS</strong><span>Analysis setup</span></div>", unsafe_allow_html=True)
 
-        st.subheader("Klasik Algoritmalar")
-        run_sift = st.toggle("SIFT", value=True, help="Ölçek ve döndürmeye dayanıklı yerel özellik analizi.")
-        run_surf = st.toggle("SURF", value=True, help="OpenCV nonfree desteği varsa çalışır; yoksa atlanır.")
-        run_akaze = st.toggle("AKAZE", value=True, help="Hızlı ikili tanımlayıcı tabanlı analiz.")
-        run_orb = st.toggle("ORB", value=True, help="Hızlı ve düşük maliyetli özellik eşleştirme.")
+        st.subheader("Classical Algorithms")
+        run_sift = st.toggle("SIFT", value=True, help="Local feature analysis that is robust to scale and rotation.")
+        run_surf = st.toggle("SURF", value=True, help="Runs when OpenCV nonfree support is available; otherwise it is skipped.")
+        run_akaze = st.toggle("AKAZE", value=True, help="Fast analysis based on binary descriptors.")
+        run_orb = st.toggle("ORB", value=True, help="Fast, lightweight feature matching.")
 
-        st.subheader("AI Modelleri")
-        run_xception = st.toggle("Xception CNN", value=True, help="Model dosyası varsa AI sınıflandırması yapar.")
-        run_efficientnet = st.toggle("EfficientNet CNN", value=True, help="İkinci AI görüşü olarak kullanılır.")
-        run_gradcam = st.toggle("Grad-CAM", value=True, disabled=not run_xception, help="Xception sonucu için ısı haritası üretir.")
+        st.subheader("AI Models")
+        run_xception = st.toggle("Xception CNN", value=True, help="Runs AI classification when the model file is available.")
+        run_efficientnet = st.toggle("EfficientNet CNN", value=True, help="Provides a second AI opinion.")
+        run_gradcam = st.toggle("Grad-CAM", value=True, disabled=not run_xception, help="Generates a heatmap for the Xception result.")
 
         st.divider()
         model_rows = [
@@ -195,10 +195,10 @@ def render_sidebar() -> AnalysisSelection:
         ]
         for label, path in model_rows:
             if path.exists():
-                st.success(f"{label} modeli hazır")
+                st.success(f"{label} model ready")
             else:
-                st.warning(f"{label} ağırlığı yok")
-        st.caption("Model yoksa klasik analiz ve raporlama devam eder.")
+                st.warning(f"{label} weights missing")
+        st.caption("If model files are missing, classical analysis and reporting still continue.")
 
     return AnalysisSelection(
         run_sift=run_sift,
@@ -218,11 +218,11 @@ def render_metadata(metadata: dict[str, object]) -> None:
     """
     st.dataframe(
         [
-            {"Özellik": "Dosya Adı", "Değer": str(metadata["filename"])},
-            {"Özellik": "Format", "Değer": str(metadata["format"])},
-            {"Özellik": "Boyut", "Değer": f"{metadata['size_mb']:.3f} MB"},
-            {"Özellik": "Çözünürlük", "Değer": f"{metadata['width']} x {metadata['height']} px"},
-            {"Özellik": "Kanal", "Değer": str(metadata["channels"])},
+            {"Property": "Filename", "Value": str(metadata["filename"])},
+            {"Property": "Format", "Value": str(metadata["format"])},
+            {"Property": "Size", "Value": f"{metadata['size_mb']:.3f} MB"},
+            {"Property": "Resolution", "Value": f"{metadata['width']} x {metadata['height']} px"},
+            {"Property": "Channels", "Value": str(metadata["channels"])},
         ],
         use_container_width=True,
         hide_index=True,
@@ -260,18 +260,18 @@ def main() -> None:
             """
             <div class="ifds-section-label">
               <span>2</span>
-              <div><strong>Önizleme</strong><p>Analize girecek dosyayı kontrol et.</p></div>
+              <div><strong>Preview</strong><p>Review the file before running analysis.</p></div>
             </div>
             """,
             unsafe_allow_html=True,
         )
-        st.image(image, caption=f"Yüklenen görüntü: {metadata['filename']}", use_column_width=True)
+        st.image(image, caption=f"Uploaded image: {metadata['filename']}", use_column_width=True)
     with metadata_col:
         st.markdown(
             """
             <div class="ifds-section-label">
               <span>3</span>
-              <div><strong>Görüntü bilgileri</strong><p>Dosya özellikleri ve teknik özet.</p></div>
+              <div><strong>Image details</strong><p>File properties and technical summary.</p></div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -281,23 +281,23 @@ def main() -> None:
 
     st.markdown("<div class='ifds-runbar'>", unsafe_allow_html=True)
     run_disabled = _selection_count(selection) == 0
-    run_clicked = st.button("Analizi Başlat", type="primary", use_container_width=True, disabled=run_disabled)
+    run_clicked = st.button("Start Analysis", type="primary", use_container_width=True, disabled=run_disabled)
     st.markdown("</div>", unsafe_allow_html=True)
     if run_disabled:
-        st.warning("En az bir analiz yöntemi seçmelisiniz.")
+        st.warning("Select at least one analysis method.")
 
     cached = st.session_state.get(APP_STATE_KEY)
     can_reuse = bool(cached and cached.get("file_key") == file_key and cached.get("selection_key") == selection_key)
 
     if run_clicked and not run_disabled:
-        progress = st.progress(0, text="Analiz başlıyor...")
+        progress = st.progress(0, text="Starting analysis...")
         service = AnalysisService()
-        progress.progress(15, text="Algoritmalar hazırlanıyor...")
+        progress.progress(15, text="Preparing analyzers...")
         bundle = service.run(image, selection)
         results = AnalysisService.to_dict(bundle)
         final_verdict = VerdictService.evaluate(results)
         results["final_verdict"] = final_verdict
-        progress.progress(100, text="Analiz tamamlandı.")
+        progress.progress(100, text="Analysis completed.")
         progress.empty()
         st.session_state[APP_STATE_KEY] = {
             "file_key": file_key,
@@ -311,8 +311,8 @@ def main() -> None:
         st.markdown(
             """
             <div class="ifds-empty-state is-compact">
-              <strong>Analiz hazır</strong>
-              <span>Seçili yöntemlerle sonucu üretmek için Analizi Başlat düğmesine bas.</span>
+              <strong>Ready to analyze</strong>
+              <span>Press Start Analysis to generate results with the selected methods.</span>
             </div>
             """,
             unsafe_allow_html=True,
@@ -320,15 +320,15 @@ def main() -> None:
         return
     final_verdict = results["final_verdict"]
 
-    st.subheader("Genel Karar")
+    st.subheader("Overall Verdict")
     render_final_verdict(final_verdict)
 
     if results["classical"]:
-        st.subheader("Klasik Algoritma Sonuçları")
+        st.subheader("Classical Algorithm Results")
         render_results_grid(results["classical"])
 
     if results["ai"]:
-        st.subheader("AI Model Sonuçları")
+        st.subheader("AI Model Results")
         ai_columns = st.columns(min(2, max(1, len(results["ai"]))))
         for index, result in enumerate(results["ai"].values()):
             with ai_columns[index % len(ai_columns)]:
@@ -352,7 +352,7 @@ def main() -> None:
                         st.caption(result.error_message)
                     render_heatmap_viewer(result)
 
-    st.subheader("Karşılaştırmalı Analiz")
+    st.subheader("Comparative Analysis")
     render_comparison_table(results)
 
     st.divider()
@@ -363,18 +363,18 @@ def main() -> None:
         try:
             pdf_bytes = report.generate_pdf(image, metadata, results)
             st.download_button(
-                "PDF Rapor İndir",
+                "Download PDF Report",
                 data=pdf_bytes,
                 file_name=f"ifds_report_{report_stem}.pdf",
                 mime="application/pdf",
                 use_container_width=True,
             )
         except Exception as exc:
-            st.warning(f"PDF raporu üretilemedi: {exc}")
+            st.warning(f"PDF report could not be generated: {exc}")
     with report_col_2:
         html_report = report.generate_html(image, metadata, results)
         st.download_button(
-            "HTML Rapor İndir",
+            "Download HTML Report",
             data=html_report,
             file_name=f"ifds_report_{report_stem}.html",
             mime="text/html",

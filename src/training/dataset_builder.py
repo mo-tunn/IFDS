@@ -70,7 +70,7 @@ class ForensicDatasetBuilder:
         """
         paths, labels = self.load_image_paths()
         if not paths:
-            raise ValueError(f"Veri seti görüntüsü bulunamadı: {self.raw_dir}")
+            raise ValueError(f"No dataset images were found: {self.raw_dir}")
 
         x_temp, x_test, y_temp, y_test = train_test_split(
             paths,
@@ -102,7 +102,7 @@ class ForensicDatasetBuilder:
         try:
             import tensorflow as tf
         except ImportError as exc:
-            raise ImportError("TensorFlow yüklü değil; eğitim araçları kullanılamaz.") from exc
+            raise ImportError("TensorFlow is not installed; training tools are unavailable.") from exc
 
         train, val, test = self.split_paths()
         return (

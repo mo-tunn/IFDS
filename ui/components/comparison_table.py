@@ -43,7 +43,7 @@ def render_comparison_table(results: dict[str, Any]) -> None:
         )
 
     if not rows:
-        st.info("Karşılaştırma için sonuç yok.")
+        st.info("No comparison results available.")
         return
     df = pd.DataFrame(rows)
     st.dataframe(

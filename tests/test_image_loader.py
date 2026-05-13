@@ -27,18 +27,18 @@ def test_load_from_bytes_png_returns_rgb_and_metadata(png_bytes: bytes) -> None:
 
 
 def test_load_from_bytes_rejects_unsupported_extension(png_bytes: bytes) -> None:
-    with pytest.raises(ValueError, match="Desteklenmeyen format"):
+    with pytest.raises(ValueError, match="Unsupported format"):
         ImageLoader.load_from_bytes(png_bytes, "sample.txt")
 
 
 def test_load_from_bytes_rejects_oversized_payload(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(image_loader_module, "MAX_FILE_SIZE_BYTES", 4)
-    with pytest.raises(ValueError, match="Dosya çok büyük"):
+    with pytest.raises(ValueError, match="File is too large"):
         ImageLoader.load_from_bytes(b"12345", "sample.png")
 
 
 def test_load_from_bytes_rejects_corrupt_image() -> None:
-    with pytest.raises(ValueError, match="Görüntü okunamadı"):
+    with pytest.raises(ValueError, match="Image could not be read"):
         ImageLoader.load_from_bytes(b"not-an-image", "sample.png")
 
 
@@ -82,7 +82,7 @@ def test_load_from_path_and_invalid_path_cases(tmp_path: Path, png_bytes: bytes)
     assert metadata["filename"] == "sample.png"
     with pytest.raises(FileNotFoundError):
         ImageLoader.load_from_path(tmp_path / "missing.png")
-    with pytest.raises(ValueError, match="Geçerli bir dosya değil"):
+    with pytest.raises(ValueError, match="Not a valid file"):
         ImageLoader.load_from_path(tmp_path)
 
 
@@ -96,9 +96,9 @@ def test_decode_bytes_falls_back_to_pillow(monkeypatch: pytest.MonkeyPatch, png_
 
 def test_private_validation_helpers_cover_edge_cases(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(image_loader_module, "MAX_FILE_SIZE_BYTES", 4)
-    with pytest.raises(ValueError, match="Dosya boş"):
+    with pytest.raises(ValueError, match="File is empty"):
         ImageLoader._validate_size(0)
-    with pytest.raises(ValueError, match="Dosya çok büyük"):
+    with pytest.raises(ValueError, match="File is too large"):
         ImageLoader._validate_size(5)
-    with pytest.raises(ValueError, match="RGB ve 3 kanallı"):
+    with pytest.raises(ValueError, match="RGB with 3 channels"):
         ImageLoader.preprocess_for_model(np.zeros((4, 4), dtype=np.uint8))

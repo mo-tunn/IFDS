@@ -161,7 +161,7 @@ class AnalysisService:
                         result.heatmap = heatmap
                         result.overlay_image = overlay
                     except Exception as exc:
-                        result.error_message = f"Grad-CAM üretilemedi: {self._short_error(exc)}"
+                        result.error_message = f"Grad-CAM could not be generated: {self._short_error(exc)}"
                 results["Xception"] = result
             except Exception as exc:
                 results["Xception"] = XceptionForensicModel.unavailable_result(str(exc))

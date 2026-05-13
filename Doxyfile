@@ -1,6 +1,6 @@
 PROJECT_NAME           = "Image Forgery Detection System"
 PROJECT_NUMBER         = 1.0
-PROJECT_BRIEF          = "Streamlit tabanli goruntu sahteciligi tespit sistemi"
+PROJECT_BRIEF          = "Streamlit-based image forgery detection system"
 OUTPUT_DIRECTORY       = docs/doxygen
 INPUT                  = README.md src app.py ui config
 USE_MDFILE_AS_MAINPAGE = README.md

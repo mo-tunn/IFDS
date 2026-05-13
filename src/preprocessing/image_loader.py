@@ -39,9 +39,9 @@ class ImageLoader:
         """
         path = Path(file_path)
         if not path.exists():
-            raise FileNotFoundError(f"Dosya bulunamadı: {path}")
+            raise FileNotFoundError(f"File was not found: {path}")
         if not path.is_file():
-            raise ValueError(f"Geçerli bir dosya değil: {path}")
+            raise ValueError(f"Not a valid file: {path}")
 
         ImageLoader._validate_suffix(path.suffix)
         size_bytes = path.stat().st_size
@@ -50,7 +50,7 @@ class ImageLoader:
         try:
             payload = path.read_bytes()
         except OSError as exc:
-            raise ValueError(f"Dosya okunamadı: {path}") from exc
+            raise ValueError(f"File could not be read: {path}") from exc
 
         image = ImageLoader._decode_bytes(payload, path.suffix)
         metadata = ImageLoader._metadata(path.name, path.suffix, size_bytes, image)
@@ -118,15 +118,15 @@ class ImageLoader:
         normalized = suffix.lower()
         if normalized not in SUPPORTED_FORMATS:
             supported = ", ".join(sorted(SUPPORTED_FORMATS))
-            raise ValueError(f"Desteklenmeyen format: {suffix or '(yok)'}. Desteklenenler: {supported}")
+            raise ValueError(f"Unsupported format: {suffix or '(none)'}. Supported formats: {supported}")
 
     @staticmethod
     def _validate_size(size_bytes: int) -> None:
         if size_bytes <= 0:
-            raise ValueError("Dosya boş veya okunabilir görüntü verisi içermiyor.")
+            raise ValueError("File is empty or does not contain readable image data.")
         if size_bytes > MAX_FILE_SIZE_BYTES:
             size_mb = size_bytes / (1024 * 1024)
-            raise ValueError(f"Dosya çok büyük: {size_mb:.1f} MB (maksimum {MAX_FILE_SIZE_MB} MB).")
+            raise ValueError(f"File is too large: {size_mb:.1f} MB (maximum {MAX_FILE_SIZE_MB} MB).")
 
     @staticmethod
     def _decode_bytes(file_bytes: bytes, suffix: str) -> np.ndarray:
@@ -148,12 +148,12 @@ class ImageLoader:
                     pil_image.seek(0)
                 return np.asarray(pil_image.convert("RGB"))
         except (UnidentifiedImageError, OSError, ValueError) as exc:
-            raise ValueError("Görüntü okunamadı veya dosya bozuk.") from exc
+            raise ValueError("Image could not be read or the file is corrupted.") from exc
 
     @staticmethod
     def _resize_and_normalize(image: np.ndarray, target_size: tuple[int, int]) -> np.ndarray:
         if image.ndim != 3 or image.shape[2] != 3:
-            raise ValueError("Beklenen görüntü formatı RGB ve 3 kanallı olmalı.")
+            raise ValueError("Expected image format must be RGB with 3 channels.")
         resized = cv2.resize(image, target_size, interpolation=cv2.INTER_AREA)
         return resized.astype(np.float32) / 255.0
 

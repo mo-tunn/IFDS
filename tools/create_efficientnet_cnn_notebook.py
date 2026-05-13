@@ -18,16 +18,16 @@ cells = [
     cell(
         "markdown",
         """
-        # IFDS EfficientNet CNN Eğitimi
+        # IFDS EfficientNet CNN Training
 
-        Bu notebook IFDS projesi için ikinci AI algoritması olan **EfficientNet CNN** modelini eğitir.
+        This notebook trains the **EfficientNet CNN** model as the second AI algorithm for IFDS.
 
         - Dataset: `divg07/casia-20-image-tampering-detection-dataset`
-        - Görüntüler: `CASIA2/Au`, `CASIA2/Tp`
-        - Maskeler: `CASIA 2 Groundtruth(5123 files)`
-        - Model: EfficientNetB0/B4 tabanlı binary classifier
-        - Groundtruth varsa: tampered eğitim örneklerinde mask-guided crop augmentation
-        - ImageNet ağırlığı indirilemezse: backbone otomatik trainable kalır; donuk rastgele feature extractor kullanılmaz
+        - Images: `CASIA2/Au`, `CASIA2/Tp`
+        - Masks: `CASIA 2 Groundtruth(5123 files)`
+        - Model: EfficientNetB0/B4-based binary classifier
+        - When ground truth is available: mask-guided crop augmentation for tampered training samples
+        - If ImageNet weights cannot be downloaded: the backbone stays trainable automatically; a frozen random feature extractor is not used
         - Output: `/kaggle/working/efficientnet_finetuned.h5`
         - Metrics: `/kaggle/working/efficientnet_training_results.json`
         """,
@@ -35,13 +35,13 @@ cells = [
     cell(
         "code",
         """
-        # Hücre 2 — Kurulum
+        # Cell 2 — Setup
         import importlib.util, os, subprocess, sys
         os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "3")
         os.environ.setdefault("TF_ENABLE_ONEDNN_OPTS", "0")
         required = {"tensorflow": "tensorflow", "cv2": "opencv-contrib-python", "sklearn": "scikit-learn", "tqdm": "tqdm"}
         missing = [pkg for module, pkg in required.items() if importlib.util.find_spec(module) is None]
-        print("Eksik paketler:", missing if missing else "Yok")
+        print("Missing packages:", missing if missing else "None")
         if missing:
             subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", *missing])
         """,
@@ -49,7 +49,7 @@ cells = [
     cell(
         "code",
         """
-        # Hücre 3 — Import ve sabitler
+        # Cell 3 — Imports and constants
         from __future__ import annotations
         import gc, json, os, random, time
         os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "3")
@@ -138,7 +138,7 @@ cells = [
 
         def save_results() -> None:
             RESULTS_PATH.write_text(json.dumps(training_results, indent=2, ensure_ascii=False), encoding="utf-8")
-            print("Sonuç dosyası yazıldı:", RESULTS_PATH)
+            print("Results file written:", RESULTS_PATH)
 
         def find_local_efficientnet_weights(variant: str) -> str | None:
             expected = "efficientnetb0_notop.h5" if variant == "B0" else "efficientnetb4_notop.h5"
@@ -168,27 +168,27 @@ cells = [
     cell(
         "code",
         """
-        # Hücre 4 — GPU kontrolü
+        # Cell 4 — GPU check
         print("TensorFlow:", tf.__version__)
         gpus = tf.config.list_physical_devices("GPU")
-        print("GPU listesi:", gpus)
+        print("GPU list:", gpus)
         if gpus:
             for gpu in gpus:
                 try:
                     tf.config.experimental.set_memory_growth(gpu, True)
-                    print("Memory growth etkin:", gpu)
+                    print("Memory growth enabled:", gpu)
                 except RuntimeError as exc:
-                    print("Memory growth ayarlanamadı:", exc)
+                    print("Memory growth could not be configured:", exc)
         else:
-            print("GPU bulunamadı; BATCH_SIZE 16 yapılıyor.")
+            print("No GPU found; BATCH_SIZE is set to 16.")
             BATCH_SIZE = 16
-        print("Aktif BATCH_SIZE:", BATCH_SIZE)
+        print("Active BATCH_SIZE:", BATCH_SIZE)
         """,
     ),
     cell(
         "code",
         """
-        # Hücre 5 — Dataset keşfi ve doğrulama
+        # Cell 5 — Dataset discovery and validation
         def _as_path(path_value) -> Path:
             if isinstance(path_value, bytes):
                 return Path(path_value.decode("utf-8"))
@@ -212,7 +212,7 @@ cells = [
             except Exception:
                 image_bgr = cv2.imread(str(path), cv2.IMREAD_COLOR)
                 if image_bgr is None:
-                    raise ValueError(f"Görüntü okunamadı: {path}")
+                    raise ValueError(f"Image could not be read: {path}")
                 return cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
 
         def read_mask_uint8(mask_path: str | Path, image_shape: tuple[int, int]) -> np.ndarray | None:
@@ -315,7 +315,7 @@ cells = [
             def split_paths(self) -> tuple[DatasetSplit, DatasetSplit, DatasetSplit]:
                 paths, labels, mask_paths = self.load_image_records()
                 if not paths:
-                    raise ValueError(f"Veri seti görüntüsü bulunamadı: {self.raw_dir}")
+                    raise ValueError(f"No dataset images were found: {self.raw_dir}")
                 x_temp, x_test, y_temp, y_test, m_temp, m_test = train_test_split(
                     paths, labels, mask_paths, test_size=TEST_RATIO, stratify=labels, random_state=RANDOM_STATE
                 )
@@ -332,9 +332,9 @@ cells = [
             def _append_casia(self, paths: list[str], labels: list[int], mask_paths: list[str]) -> None:
                 au_dirs = self._find_label_dirs("Au")
                 tp_dirs = self._find_label_dirs("Tp")
-                print("Bulunan Au klasörleri:", [str(path) for path in au_dirs])
-                print("Bulunan Tp klasörleri:", [str(path) for path in tp_dirs])
-                print("Groundtruth mask sayısı:", len(self.mask_index))
+                print("Detected Au directories:", [str(path) for path in au_dirs])
+                print("Detected Tp directories:", [str(path) for path in tp_dirs])
+                print("Groundtruth mask count:", len(self.mask_index))
                 for directory in au_dirs:
                     self._append_directory(paths, labels, mask_paths, directory, CLASS_AUTHENTIC)
                 for directory in tp_dirs:
@@ -387,10 +387,10 @@ cells = [
 
             def _build_mask_index(self) -> dict[str, str]:
                 mask_dirs = self._find_mask_dirs()
-                print("Bulunan Groundtruth klasörleri:", [str(path) for path in mask_dirs])
+                print("Detected Groundtruth directories:", [str(path) for path in mask_dirs])
                 mask_index: dict[str, str] = {}
                 for directory in mask_dirs:
-                    for mask_path in tqdm(sorted(directory.rglob("*")), desc=f"{directory} mask taranıyor"):
+                    for mask_path in tqdm(sorted(directory.rglob("*")), desc=f"{directory} mask scan"):
                         if mask_path.is_file() and mask_path.suffix.lower() in SUPPORTED_FORMATS:
                             mask_index.setdefault(self._mask_key(mask_path), str(mask_path))
                 return mask_index
@@ -404,7 +404,7 @@ cells = [
                 if not directory.exists():
                     return
                 existing = set(paths)
-                for image_path in tqdm(sorted(directory.rglob("*")), desc=f"{directory} taranıyor"):
+                for image_path in tqdm(sorted(directory.rglob("*")), desc=f"{directory} scanning"):
                     if image_path.is_file() and image_path.suffix.lower() in SUPPORTED_FORMATS:
                         path_str = str(image_path)
                         if path_str not in existing and is_valid_image_file(image_path):
@@ -417,13 +417,13 @@ cells = [
         all_paths, all_labels, all_masks = builder.load_image_records()
         counts = pd.Series(all_labels).map({0: "Authentic", 1: "Tampered"}).value_counts().reindex(["Authentic", "Tampered"]).fillna(0).astype(int)
         matched_masks = sum(1 for label, mask in zip(all_labels, all_masks) if label == CLASS_TAMPERED and mask)
-        print("Geçerli görüntü:", len(all_paths))
-        print("Tampered mask eşleşmesi:", matched_masks, "/", int(counts["Tampered"]))
+        print("Valid images:", len(all_paths))
+        print("Tampered mask matches:", matched_masks, "/", int(counts["Tampered"]))
         display(counts.rename("count").to_frame())
         assert len(all_paths) > 0 and set(all_labels) == {0, 1}
         if REQUIRE_GROUNDTRUTH:
-            assert len(builder.mask_index) > 0, "CASIA 2 Groundtruth(5123 files) klasörü bulunamadı. Kaggle input olarak divg07 datasetini eklediğini kontrol et."
-            assert matched_masks > 0, "Groundtruth dosyaları bulundu ama Tp görselleriyle eşleşmedi. Dosya isimlerini kontrol et."
+            assert len(builder.mask_index) > 0, "CASIA 2 Groundtruth(5123 files) folder was not found. Verify that the divg07 dataset is added as a Kaggle input."
+            assert matched_masks > 0, "Groundtruth files were found but did not match Tp images. Check filenames."
 
         sample_indices = np.random.default_rng(RANDOM_STATE).choice(len(all_paths), size=min(5, len(all_paths)), replace=False)
         fig, axes = plt.subplots(1, len(sample_indices), figsize=(4 * len(sample_indices), 4))
@@ -440,10 +440,10 @@ cells = [
     cell(
         "code",
         """
-        # Hücre 6 — Split ve tf.data pipeline
+        # Cell 6 — Split and tf.data pipeline
         train_split, val_split, test_split = builder.split_paths()
         print("Train:", len(train_split.paths), "Val:", len(val_split.paths), "Test:", len(test_split.paths))
-        print("Train mask eşleşmesi:", sum(1 for label, mask in zip(train_split.labels, train_split.mask_paths) if label == CLASS_TAMPERED and mask))
+        print("Train mask matches:", sum(1 for label, mask in zip(train_split.labels, train_split.mask_paths) if label == CLASS_TAMPERED and mask))
 
         def make_dataset(split: DatasetSplit, augment: bool) -> tf.data.Dataset:
             ds = tf.data.Dataset.from_tensor_slices((split.paths, split.labels, split.mask_paths))
@@ -477,7 +477,7 @@ cells = [
     cell(
         "code",
         """
-        # Hücre 7 — EfficientNet model build
+        # Cell 7 — EfficientNet model build
         @dataclass
         class AIDetectionResult:
             model_name: str
@@ -518,19 +518,19 @@ cells = [
                         base_model = backbone_cls(weights=weights, include_top=False, input_shape=(*self.input_size, 3))
                         self.pretrained_weights_loaded = weights is not None
                         if weights is not None:
-                            print("EfficientNet pretrained weights kaynağı:", weights)
+                            print("EfficientNet pretrained weights source:", weights)
                         break
                     except Exception as exc:
                         last_error = exc
-                        print(f"{EFFICIENTNET_VARIANT} pretrained ağırlık yüklenemedi ({weights}): {exc}")
+                        print(f"{EFFICIENTNET_VARIANT} pretrained weights could not be loaded ({weights}): {exc}")
 
                 if base_model is None:
                     if REQUIRE_PRETRAINED_BACKBONE and imagenet_weights:
                         raise RuntimeError(
-                            "EfficientNet ImageNet ağırlığı yüklenemedi. Eğitim başlatılmadı. "
-                            "Kaggle Notebook Internet ayarını aç veya input'a efficientnetb0_notop.h5 ağırlık dosyasını ekle."
+                            "EfficientNet ImageNet weights could not be loaded. Training was not started. "
+                            "Enable Kaggle Notebook Internet or add the efficientnetb0_notop.h5 weights file as an input."
                         ) from last_error
-                    print(f"{EFFICIENTNET_VARIANT} weights=None ile devam ediliyor.")
+                    print(f"{EFFICIENTNET_VARIANT} continuing with weights=None.")
                     base_model = backbone_cls(weights=None, include_top=False, input_shape=(*self.input_size, 3))
                     self.pretrained_weights_loaded = False
 
@@ -552,7 +552,7 @@ cells = [
             def load_weights(self, path: str | Path | None = None) -> None:
                 model_path = Path(path) if path is not None else self.model_path
                 if not model_path.exists():
-                    raise FileNotFoundError(f"EfficientNet model ağırlığı bulunamadı: {model_path}")
+                    raise FileNotFoundError(f"EfficientNet model weights were not found: {model_path}")
                 tf = self._tensorflow()
                 try:
                     self.model = tf.keras.models.load_model(str(model_path), compile=False)
@@ -567,7 +567,7 @@ cells = [
 
             def predict(self, image: np.ndarray) -> AIDetectionResult:
                 if self.model is None:
-                    raise RuntimeError("EfficientNet modeli yüklenmedi. Önce load_weights() çağrılmalı.")
+                    raise RuntimeError("EfficientNet model is not loaded. Call load_weights() first.")
                 start = time.perf_counter()
                 pred = float(np.asarray(self.model.predict(np.expand_dims(image.astype(np.float32), 0), verbose=0)).reshape(-1)[0])
                 forged = pred >= CONFIDENCE_THRESHOLD
@@ -590,22 +590,22 @@ cells = [
                 try:
                     import tensorflow as tf
                 except ImportError as exc:
-                    raise ImportError("TensorFlow yüklü değil. AI inference için requirements.txt kurulmalı.") from exc
+                    raise ImportError("TensorFlow is not installed. Install requirements.txt for AI inference.") from exc
                 return tf
 
         efficientnet_wrapper = EfficientNetForensicModel(EFFICIENTNET_MODEL_PATH)
         efficientnet_model = efficientnet_wrapper.build_model(imagenet_weights=True)
-        print("ImageNet pretrained yüklendi mi:", efficientnet_wrapper.pretrained_weights_loaded)
+        print("ImageNet pretrained loaded:", efficientnet_wrapper.pretrained_weights_loaded)
         print("Backbone layer:", efficientnet_wrapper.backbone_name)
         if REQUIRE_PRETRAINED_BACKBONE and not efficientnet_wrapper.pretrained_weights_loaded:
-            raise RuntimeError("Pretrained EfficientNet yüklenmediği için eğitim durduruldu.")
+            raise RuntimeError("Training stopped because pretrained EfficientNet was not loaded.")
         efficientnet_model.summary()
         """,
     ),
     cell(
         "code",
         """
-        # Hücre 8 — Head eğitimi
+        # Cell 8 — Head training
         class EpochPrinter(tf.keras.callbacks.Callback):
             def on_epoch_end(self, epoch, logs=None):
                 logs = logs or {}
@@ -624,16 +624,16 @@ cells = [
         ]
         head_epochs = 5 if efficientnet_wrapper.pretrained_weights_loaded else 3
         if efficientnet_wrapper.pretrained_weights_loaded:
-            print("Head eğitimi: pretrained backbone donuk, classifier head öğreniyor.")
+            print("Head training: pretrained backbone is frozen and the classifier head is learning.")
         else:
-            print("ImageNet yok: backbone rastgele olduğu için donuk bırakılmadı; kısa warmup tüm modeli eğitiyor.")
+            print("No ImageNet weights: the random backbone is not frozen; short warmup trains the full model.")
         history_head = efficientnet_model.fit(train_ds, validation_data=val_ds, epochs=head_epochs, callbacks=callbacks, class_weight=class_weight, verbose=1)
         """,
     ),
     cell(
         "code",
         """
-        # Hücre 9 — Fine-tune
+        # Cell 9 — Fine-tune
         base_model = efficientnet_model.get_layer(efficientnet_wrapper.backbone_name)
         if efficientnet_wrapper.pretrained_weights_loaded:
             base_model.trainable = True
@@ -642,11 +642,11 @@ cells = [
             for layer in base_model.layers[-FINE_TUNE_LAYERS:]:
                 layer.trainable = not isinstance(layer, tf.keras.layers.BatchNormalization)
             fine_tune_lr = LEARNING_RATE / 10
-            print("Fine-tune: pretrained backbone son", FINE_TUNE_LAYERS, "katman.")
+            print("Fine-tune: last", FINE_TUNE_LAYERS, "pretrained backbone layers.")
         else:
             base_model.trainable = True
             fine_tune_lr = LEARNING_RATE
-            print("Fine-tune: pretrained yok, tüm backbone eğitimde kalıyor.")
+            print("Fine-tune: no pretrained weights, the full backbone remains trainable.")
         efficientnet_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=fine_tune_lr), loss="binary_crossentropy", metrics=["accuracy", tf.keras.metrics.AUC(name="auc")])
         history_finetune = efficientnet_model.fit(train_ds, validation_data=val_ds, epochs=EPOCHS_EFFICIENTNET, callbacks=callbacks, class_weight=class_weight, verbose=1)
 
@@ -670,7 +670,7 @@ cells = [
     cell(
         "code",
         """
-        # Hücre 10 — Değerlendirme ve threshold seçimi
+        # Cell 10 — Evaluation and threshold selection
         val_true = np.array(val_split.labels)
         val_scores = efficientnet_model.predict(val_ds, verbose=1).reshape(-1)
         threshold_grid = np.linspace(0.20, 0.80, 61)
@@ -678,7 +678,7 @@ cells = [
             [(float(th), float(f1_score(val_true, (val_scores >= th).astype(int), zero_division=0))) for th in threshold_grid],
             key=lambda item: item[1],
         )
-        print(f"Validation en iyi threshold: {best_threshold:.2f} | val_f1={best_val_f1:.4f}")
+        print(f"Best validation threshold: {best_threshold:.2f} | val_f1={best_val_f1:.4f}")
 
         y_true = np.array(test_split.labels)
         y_scores = efficientnet_model.predict(test_ds, verbose=1).reshape(-1)
@@ -711,7 +711,7 @@ cells = [
     cell(
         "code",
         """
-        # Hücre 11 — Kaydet ve doğrula
+        # Cell 11 — Save and validate
         efficientnet_model.save_weights(str(EFFICIENTNET_WEIGHTS_PATH))
         EFFICIENTNET_MODEL_PATH.write_bytes(EFFICIENTNET_WEIGHTS_PATH.read_bytes())
         assert EFFICIENTNET_MODEL_PATH.exists()
@@ -725,10 +725,10 @@ cells = [
         reloaded.load_weights(str(EFFICIENTNET_MODEL_PATH))
         sample_batch, sample_labels = next(iter(test_ds.take(1)))
         sample_pred = float(reloaded.predict(sample_batch[:1], verbose=0).reshape(-1)[0])
-        print("Reload tek örnek tahmini:", sample_pred, "| gerçek label:", int(sample_labels[0].numpy()))
+        print("Reloaded single-sample prediction:", sample_pred, "| true label:", int(sample_labels[0].numpy()))
         assert 0.0 <= sample_pred <= 1.0
         save_results()
-        print("Model ağırlıkları başarıyla kaydedildi:", EFFICIENTNET_MODEL_PATH)
+        print("Model weights saved successfully:", EFFICIENTNET_MODEL_PATH)
         display(pd.DataFrame([{"model": "EfficientNet CNN", **training_results["efficientnet"]}]))
         display(pd.DataFrame([{"file": name, **info} for name, info in training_results["files"].items()]))
         """,
@@ -736,27 +736,27 @@ cells = [
     cell(
         "markdown",
         """
-        # İndirme
+        # Download
 
-        Kaggle Output sekmesinden şunları indir:
+        Download these files from the Kaggle Output tab:
 
         - `efficientnet_finetuned.h5`
         - `efficientnet_training_results.json`
 
-        Projede şu konuma koy:
+        Place it at this project path:
 
         - `efficientnet_finetuned.h5` → `data/models/efficientnet_finetuned.h5`
 
-        Not: `efficientnet_finetuned.h5` dosyası Keras full-model değil, weight-only HDF5 dosyasıdır.
-        IFDS uygulaması önce full model yüklemeyi dener; olmazsa aynı mimariyi kurup bu ağırlıkları yükler.
+        Note: `efficientnet_finetuned.h5` is not a Keras full-model file; it is a weight-only HDF5 file.
+        The IFDS application first attempts full-model loading; if that fails, it builds the same architecture and loads these weights.
 
-        Böylece AI tarafında iki algoritma olur:
+        This gives the AI side two algorithms:
 
         - `xception_finetuned.h5`
         - `efficientnet_finetuned.h5`
 
-        Bu notebook özellikle Kaggle datasetindeki `CASIA 2 Groundtruth(5123 files)` klasörünü kullanacak şekilde ayarlıdır.
-        Hücre 5'te `Tampered mask eşleşmesi` değeri sıfırdan büyük görünmelidir.
+        This notebook is configured specifically to use the `CASIA 2 Groundtruth(5123 files)` folder from the Kaggle dataset.
+        In Cell 5, `Tampered mask matches` should be greater than zero.
         """,
     ),
 ]
@@ -780,7 +780,7 @@ notebook = {
     "nbformat_minor": 5,
 }
 
-out = Path("notebooks") / "IFDS_Kaggle_EfficientNet_CNN_Egitimi.ipynb"
+out = Path("notebooks") / "IFDS_Kaggle_EfficientNet_CNN_Training.ipynb"
 out.write_text(json.dumps(notebook, ensure_ascii=False, indent=2), encoding="utf-8")
 print(out)
 print("cells:", len(cells))

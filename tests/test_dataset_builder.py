@@ -52,14 +52,14 @@ def test_split_paths_returns_three_stratified_splits(tmp_path: Path) -> None:
 
 
 def test_split_paths_raises_when_no_images(tmp_path: Path) -> None:
-    with pytest.raises(ValueError, match="Veri seti görüntüsü bulunamadı"):
+    with pytest.raises(ValueError, match="No dataset images were found"):
         ForensicDatasetBuilder(tmp_path).split_paths()
 
 
 def test_build_tf_datasets_reports_missing_tensorflow(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setitem(sys.modules, "tensorflow", None)
 
-    with pytest.raises(ImportError, match="TensorFlow yüklü değil"):
+    with pytest.raises(ImportError, match="TensorFlow is not installed"):
         ForensicDatasetBuilder(tmp_path).build_tf_datasets()
 
 

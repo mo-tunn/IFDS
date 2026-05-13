@@ -24,7 +24,7 @@ def render_results_grid(results: dict[str, DetectionResult]) -> None:
     import streamlit as st
 
     if not results:
-        st.info("Klasik algoritma sonucu yok.")
+        st.info("No classical algorithm results available.")
         return
 
     columns = st.columns(min(4, max(1, len(results))))

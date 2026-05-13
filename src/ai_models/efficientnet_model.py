@@ -65,7 +65,7 @@ class EfficientNetForensicModel:
         except Exception as exc:
             if weights is None:
                 raise
-            print(f"{EFFICIENTNET_VARIANT} ImageNet ağırlıkları indirilemedi, weights=None ile devam ediliyor: {exc}")
+            print(f"{EFFICIENTNET_VARIANT} ImageNet weights could not be downloaded; continuing with weights=None: {exc}")
             base_model = backbone_cls(
                 weights=None,
                 include_top=False,
@@ -107,7 +107,7 @@ class EfficientNetForensicModel:
         """
         model_path = Path(path) if path is not None else self.model_path
         if not model_path.exists():
-            raise FileNotFoundError(f"EfficientNet model ağırlığı bulunamadı: {model_path}")
+            raise FileNotFoundError(f"EfficientNet model weights were not found: {model_path}")
 
         tf = self._tensorflow()
         try:
@@ -139,7 +139,7 @@ class EfficientNetForensicModel:
         @raises RuntimeError When the model has not been loaded.
         """
         if self.model is None:
-            raise RuntimeError("EfficientNet modeli yüklenmedi. Önce load_weights() çağrılmalı.")
+            raise RuntimeError("EfficientNet model is not loaded. Call load_weights() first.")
         start = time.perf_counter()
         batch = np.expand_dims(image.astype(np.float32), axis=0)
         prediction = self.model.predict(batch, verbose=0)
@@ -175,7 +175,7 @@ class EfficientNetForensicModel:
         try:
             import tensorflow as tf
         except ImportError as exc:
-            raise ImportError("TensorFlow yüklü değil. AI inference için requirements.txt kurulmalı.") from exc
+            raise ImportError("TensorFlow is not installed. Install requirements.txt for AI inference.") from exc
         return tf
 
     @staticmethod
@@ -198,7 +198,7 @@ class EfficientNetForensicModel:
         @param model_path Source weights path.
         """
         if self.model is None:
-            raise RuntimeError("EfficientNet modeli build edilmeden ağırlık yüklenemez.")
+            raise RuntimeError("EfficientNet weights cannot be loaded before the model is built.")
         with tempfile.TemporaryDirectory(prefix="ifds_efficientnet_") as tmp_dir:
             compatible_path = Path(tmp_dir) / "efficientnet_finetuned.weights.h5"
             copy2(model_path, compatible_path)

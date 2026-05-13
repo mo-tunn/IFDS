@@ -35,7 +35,7 @@ class SIFTDetector(BaseDetector):
         @param ratio Lowe ratio threshold.
         """
         if not hasattr(cv2, "SIFT_create"):
-            raise ImportError("SIFT bu OpenCV kurulumunda mevcut değil.")
+            raise ImportError("SIFT is not available in this OpenCV installation.")
         self._detector = cv2.SIFT_create(nfeatures=n_features)
         self._ratio = ratio
         self._min_matches = SIFT_MIN_MATCHES

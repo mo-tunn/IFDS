@@ -30,7 +30,7 @@ def render_final_verdict(verdict: FinalVerdict) -> None:
         f"""
         <section class="ifds-verdict-panel {_verdict_class(verdict.label)}">
           <div>
-            <span class="ifds-eyebrow">Genel karar</span>
+            <span class="ifds-eyebrow">Final verdict</span>
             <h2>{html.escape(verdict.label)}</h2>
             <p>{html.escape(verdict.level)}</p>
           </div>

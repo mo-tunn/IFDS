@@ -138,7 +138,7 @@ def test_generate_raises_when_gradient_is_missing(monkeypatch: pytest.MonkeyPatc
     monkeypatch.setattr(GradCAM, "_tensorflow", staticmethod(lambda: FakeTensorFlow))
     FakeGradientTape.gradient_value = None
     try:
-        with pytest.raises(RuntimeError, match="gradyanı"):
+        with pytest.raises(RuntimeError, match="gradient"):
             GradCAM(FallbackModel(FakeLayer("block14_sepconv2_act"))).generate(
                 np.ones((1, 8, 8, 3), dtype=np.float32)
             )
@@ -164,5 +164,5 @@ def test_find_grad_layer_searches_nested_layers_and_handles_missing() -> None:
 def test_build_grad_model_reports_missing_layer() -> None:
     model = types.SimpleNamespace(inputs=["input"], output="out", layers=[], get_layer=lambda name: (_ for _ in ()).throw(ValueError(name)))
 
-    with pytest.raises(RuntimeError, match="Grad-CAM katmanı bulunamadı"):
+    with pytest.raises(RuntimeError, match="Grad-CAM layer was not found"):
         GradCAM(model)._build_grad_model(FakeTensorFlow)

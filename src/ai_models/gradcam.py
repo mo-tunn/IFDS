@@ -41,7 +41,7 @@ class GradCAM:
 
         grads = tape.gradient(loss, conv_outputs)
         if grads is None:
-            raise RuntimeError("Grad-CAM gradyanı hesaplanamadı.")
+            raise RuntimeError("Grad-CAM gradient could not be computed.")
         pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
         conv_outputs = conv_outputs[0]
         heatmap = conv_outputs @ pooled_grads[..., tf.newaxis]
@@ -67,7 +67,7 @@ class GradCAM:
         except Exception:
             conv_layer = self._find_grad_layer()
             if conv_layer is None:
-                raise RuntimeError(f"Grad-CAM katmanı bulunamadı: {self.last_conv_layer_name}")
+                raise RuntimeError(f"Grad-CAM layer was not found: {self.last_conv_layer_name}")
             return tf.keras.Model(self.model.inputs, [conv_layer.output, self.model.output])
 
     def _build_xception_backbone_grad_model(self, tf: Any) -> Any:
@@ -152,5 +152,5 @@ class GradCAM:
         try:
             import tensorflow as tf
         except ImportError as exc:
-            raise ImportError("TensorFlow yüklü değil. Grad-CAM için requirements.txt kurulmalı.") from exc
+            raise ImportError("TensorFlow is not installed. Install requirements.txt for Grad-CAM.") from exc
         return tf
