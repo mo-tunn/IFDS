@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>IFDS Sprint Task Board</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --panel: #ffffff;
+      --panel-soft: #f0f3f7;
+      --border: #d0d7de;
+      --border-soft: #eaeef2;
+      --ink: #1f2328;
+      --muted: #656d76;
+      --blue: #0969da;
+      --green: #1a7f37;
+      --purple: #8250df;
+      --amber: #9a6700;
+      --red: #cf222e;
+      --shadow: 0 10px 28px rgba(31, 35, 40, .10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    .app {
+      width: 1600px;
+      min-height: 1120px;
+      display: grid;
+      grid-template-columns: 248px 1fr;
+      background: var(--bg);
+    }
+
+    .sidebar {
+      background: #0d1117;
+      color: #c9d1d9;
+      padding: 24px 18px;
+      border-right: 1px solid #30363d;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #2f81f7, #8957e5);
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .brand strong {
+      display: block;
+      color: #fff;
+      font-size: 17px;
+    }
+
+    .brand span {
+      display: block;
+      color: #8b949e;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .nav-title {
+      color: #8b949e;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin: 20px 10px 8px;
+    }
+
+    .nav-item {
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #c9d1d9;
+    }
+
+    .nav-item.active {
+      background: #21262d;
+      color: #fff;
+      box-shadow: inset 3px 0 0 #2f81f7;
+    }
+
+    .badge {
+      min-width: 24px;
+      height: 20px;
+      border-radius: 999px;
+      display: inline-grid;
+      place-items: center;
+      background: #30363d;
+      color: #c9d1d9;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .content {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .topbar {
+      height: 68px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+
+    .crumbs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .crumbs strong {
+      color: var(--ink);
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      height: 34px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .btn.primary {
+      background: #1f883d;
+      border-color: #1f883d;
+      color: #fff;
+    }
+
+    .header {
+      background: var(--panel);
+      padding: 24px 28px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.48;
+    }
+
+    .stats {
+      display: flex;
+      gap: 10px;
+    }
+
+    .stat {
+      min-width: 112px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 20px;
+    }
+
+    .tabs {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 20px;
+    }
+
+    .tab {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .tab.active {
+      background: #ddf4ff;
+      color: #0969da;
+    }
+
+    .filters {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 16px 28px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .search {
+      width: 520px;
+      height: 36px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 30px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+
+    .dot.green { background: var(--green); }
+    .dot.purple { background: var(--purple); }
+    .dot.amber { background: #d29922; }
+
+    .board-wrap {
+      padding: 22px 28px 30px;
+      overflow: visible;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(232px, 1fr));
+      gap: 16px;
+      align-items: start;
+    }
+
+    .column {
+      background: var(--panel-soft);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      min-height: 740px;
+      padding: 12px;
+      box-shadow: 0 1px 0 rgba(31, 35, 40, .04);
+    }
+
+    .col-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      padding: 2px 2px 0;
+    }
+
+    .col-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .count {
+      display: inline-grid;
+      place-items: center;
+      min-width: 26px;
+      height: 22px;
+      border-radius: 999px;
+      background: #e6edf3;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .limit {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px;
+      margin-bottom: 11px;
+      box-shadow: 0 2px 6px rgba(31, 35, 40, .06);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 9px;
+    }
+
+    .issue {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .priority {
+      font-size: 11px;
+      font-weight: 800;
+      border-radius: 999px;
+      padding: 4px 7px;
+      background: #fff8c5;
+      color: var(--amber);
+      white-space: nowrap;
+    }
+
+    .priority.high {
+      background: #ffebe9;
+      color: var(--red);
+    }
+
+    .priority.medium {
+      background: #fff8c5;
+      color: var(--amber);
+    }
+
+    .priority.low {
+      background: #ddf4ff;
+      color: var(--blue);
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    .labels {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 11px 0;
+    }
+
+    .label {
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 800;
+      background: #ddf4ff;
+      color: #0969da;
+    }
+
+    .label.ai {
+      background: #fbefff;
+      color: var(--purple);
+    }
+
+    .label.test {
+      background: #dafbe1;
+      color: var(--green);
+    }
+
+    .label.docs {
+      background: #fff8c5;
+      color: var(--amber);
+    }
+
+    .label.bug {
+      background: #ffebe9;
+      color: var(--red);
+    }
+
+    .meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      border-top: 1px solid var(--border-soft);
+      padding-top: 10px;
+      margin-top: 9px;
+    }
+
+    .avatars {
+      display: flex;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 900;
+      border: 2px solid #fff;
+      margin-left: -5px;
+    }
+
+    .avatar:first-child {
+      margin-left: 0;
+    }
+
+    .mk { background: var(--blue); }
+    .yy { background: var(--green); }
+    .yv { background: var(--purple); }
+
+    .points {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .progress {
+      height: 6px;
+      border-radius: 999px;
+      background: #eaeef2;
+      overflow: hidden;
+      margin-top: 11px;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      background: #1f883d;
+      border-radius: inherit;
+    }
+
+    .footnote {
+      position: absolute;
+      bottom: 18px;
+      right: 28px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="mark">IF</div>
+        <div>
+          <strong>IFDS Workspace</strong>
+          <span>Software Engineering Project</span>
+        </div>
+      </div>
+
+      <div class="nav-title">Project</div>
+      <div class="nav-item">Overview <span class="badge">1</span></div>
+      <div class="nav-item active">Sprint Board <span class="badge">15</span></div>
+      <div class="nav-item">Backlog <span class="badge">4</span></div>
+      <div class="nav-item">Roadmap <span class="badge">2</span></div>
+      <div class="nav-item">Reports <span class="badge">6</span></div>
+
+      <div class="nav-title">Team</div>
+      <div class="nav-item">Metehan Kızılcık <span class="badge">6</span></div>
+      <div class="nav-item">Yavuz Selim Yılmaz <span class="badge">5</span></div>
+      <div class="nav-item">Yusuf Vural <span class="badge">4</span></div>
+
+      <div class="nav-title">Milestones</div>
+      <div class="nav-item">Sprint 1 <span class="badge">Done</span></div>
+      <div class="nav-item">Sprint 2 <span class="badge">Done</span></div>
+      <div class="nav-item">Sprint 3 <span class="badge">Done</span></div>
+      <div class="nav-item">Sprint 4 <span class="badge">Active</span></div>
+    </aside>
+
+    <section class="content">
+      <div class="topbar">
+        <div class="crumbs">
+          <span>mo-tunn</span>
+          <span>/</span>
+          <strong>IFDS</strong>
+          <span>/</span>
+          <span>Projects</span>
+          <span>/</span>
+          <strong>May 2026 Sprint Board</strong>
+        </div>
+        <div class="toolbar">
+          <span class="btn">Share</span>
+          <span class="btn">Export</span>
+          <span class="btn primary">New item</span>
+        </div>
+      </div>
+
+      <header class="header">
+        <div class="title-row">
+          <div>
+            <h1>IFDS Development Sprint Board</h1>
+            <p class="subtitle">
+              Kanban/Scrum görünümü; kartlar issue başlığı, etiket, sorumlu kişi,
+              story point, sprint ve kalite kanıtı alanlarıyla takip edilmiştir.
+            </p>
+          </div>
+          <div class="stats">
+            <div class="stat"><span>Items</span><strong>15</strong></div>
+            <div class="stat"><span>Done</span><strong>10</strong></div>
+            <div class="stat"><span>Story Points</span><strong>68</strong></div>
+            <div class="stat"><span>Velocity</span><strong>17/sp</strong></div>
+          </div>
+        </div>
+        <div class="tabs">
+          <div class="tab">Table</div>
+          <div class="tab active">Board</div>
+          <div class="tab">Roadmap</div>
+          <div class="tab">Insights</div>
+          <div class="tab">Files</div>
+        </div>
+      </header>
+
+      <section class="filters">
+        <div class="search">Filter by keyword or field: assignee, label, sprint, status</div>
+        <div class="chips">
+          <span class="chip"><span class="dot"></span>Iteration: May 2026</span>
+          <span class="chip"><span class="dot green"></span>Group by: Status</span>
+          <span class="chip"><span class="dot purple"></span>View: Scrum Board</span>
+          <span class="chip"><span class="dot amber"></span>WIP limit enabled</span>
+        </div>
+      </section>
+
+      <section class="board-wrap">
+        <div class="board">
+          <section class="column">
+            <div class="col-head">
+              <div class="col-title">Backlog <span class="count">2</span></div>
+              <div class="limit">5 SP</div>
+            </div>
+            <article class="card">
+              <div class="card-top"><span class="issue">#IFDS-13</span><span class="priority medium">Medium</span></div>
+              <h3>Kullanıcı el kitapçığı son okuma</h3>
+              <div class="labels"><span class="label docs">docs</span><span class="label">manual</span></div>
+              <div class="meta-row"><div class="avatars"><span class="avatar yy">YY</span></div><span class="points">3 SP</span></div>
+            </article>
+            <article class="card">
+              <div class="card-top"><span class="issue">#IFDS-14</span><span class="priority medium">Medium</span></div>
+              <h3>FSM emek hesabı doğrulama</h3>
+              <div class="labels"><span class="label docs">fsm</span><span class="label docs">report</span></div>
+              <div class="meta-row"><div class="avatars"><span class="avatar mk">MK</span></div><span class="points">3 SP</span></div>
+            </article>
+          </section>
+
+          <section class="column">
+            <div class="col-head">
+              <div class="col-title">Ready <span class="count">2</span></div>
+              <div class="limit">7 SP</div>
+            </div>
+            <article class="card">
+              <div class="card-top"><span class="issue">#IFDS-15</span><span class="priority low">Low</span></div>
+              <h3>README badge ve teslim linkleri</h3>
+              <div class="labels"><span class="label docs">readme</span><span class="label test">quality</span></div>
+              <div class="meta-row"><div class="avatars"><span class="avatar yv">YV</span></div><span class="points">3 SP</span></div>
+            </article>
+            <article class="card">
+              <div class="card-top"><span class="issue">#IFDS-12</span><span class="priority medium">Medium</span></div>
+              <h3>Doxygen ve Graphviz çıktı paketi</h3>
+              <div class="labels"><span class="label docs">doxygen</span><span class="label docs">graphviz</span></div>
+              <div class="meta-row"><div class="avatars"><span class="avatar yv">YV</span></div><span class="points">4 SP</span></div>
+            </article>
+          </section>
+
+          <section class="column">
+            <div class="col-head">
+              <div class="col-title">In Progress <span class="count">3</span></div>
+              <div class="limit">21/24 SP</div>
+            </div>
+            <article class="card">
+              <div class="card-top"><span class="issue">#IFDS-07</span><span class="priority high">High</span></div>
+              <h3>Modern Streamlit dashboard UI</h3>
+              <div class="labels"><span class="label">frontend</span><span class="label">ux</span></div>
+              <div class="progress"><span style="width: 86%"></span></div>
+              <div class="meta-row"><div class="avatars"><span class="avatar yy">YY</span></div><span class="points">8 SP</span></div>
+            </article>
+            <article class="card">
+              <div class="card-top"><span class="issue">#IFDS-10</span><span class="priority high">High</span></div>
+              <h3>Coverage artırımı ve unit test genişletme</h3>
+              <div class="labels"><span class="label test">tests</span><span class="label test">coverage</span></div>
+              <div class="progress"><span style="width: 95%"></span></div>
+              <div class="meta-row"><div class="avatars"><span class="avatar mk">MK</span></div><span class="points">8 SP</span></div>
+            </article>
+            <article class="card">
+              <div class="card-top"><span class="issue">#IFDS-04</span><span class="priority high">High</span></div>
+              <h3>AI model wrapper ve hata toleransı</h3>
+              <div class="labels"><span class="label ai">ai</span><span class="label bug">fallback</span></div>
+              <div class="progress"><span style="width: 78%"></span></div>
+              <div class="meta-row"><div class="avatars"><span class="avatar yv">YV</span></div><span class="points">8 SP</span></div>
+            </article>
+          </section>
+
+          <section class="column">
+            <div class="col-head">
+              <div class="col-title">Review <span class="count">3</span></div>
+              <div class="limit">18 SP</div>
+            </div>
+            <article class="card">
+              <div class="card-top"><span class="issue">#IFDS-11</span><span class="priority high">High</span></div>
+              <h3>SonarQube kalite analizi</h3>
+              <div class="labels"><span class="label test">sonarqube</span><span class="label test">quality gate</span></div>
+              <div class="meta-row"><div class="avatars"><span class="avatar mk">MK</span></div><span class="points">5 SP</span></div>
+            </article>
+            <article class="card">
+              <div class="card-top"><span class="issue">#IFDS-09</span><span class="priority medium">Medium</span></div>
+              <h3>PDF/HTML rapor üretimi</h3>
+              <div class="labels"><span class="label docs">reporting</span><span class="label bug">unicode fix</span></div>
+              <div class="meta-row"><div class="avatars"><span class="avatar yy">YY</span></div><span class="points">5 SP</span></div>
+            </article>
+            <article class="card">
+              <div class="card-top"><span class="issue">#IFDS-08</span><span class="priority high">High</span></div>
+              <h3>Nihai karar mekanizması</h3>
+              <div class="labels"><span class="label">backend</span><span class="label test">verdict tests</span></div>
+              <div class="meta-row"><div class="avatars"><span class="avatar mk">MK</span></div><span class="points">5 SP</span></div>
+            </article>
+          </section>
+
+          <section class="column">
+            <div class="col-head">
+              <div class="col-title">Done <span class="count">5</span></div>
+              <div class="limit">17 SP</div>
+            </div>
+            <article class="card">
+              <div class="card-top"><span class="issue">#IFDS-01</span><span class="priority high">High</span></div>
+              <h3>Proje iskeleti ve modül yapısı</h3>
+              <div class="labels"><span class="label">setup</span><span class="label">repo</span></div>
+              <div class="meta-row"><div class="avatars"><span class="avatar mk">MK</span></div><span class="points">5 SP</span></div>
+            </article>
+            <article class="card">
+              <div class="card-top"><span class="issue">#IFDS-02</span><span class="priority high">High</span></div>
+              <h3>Görüntü yükleme ve metadata</h3>
+              <div class="labels"><span class="label">preprocessing</span><span class="label test">tests</span></div>
+              <div class="meta-row"><div class="avatars"><span class="avatar mk">MK</span></div><span class="points">5 SP</span></div>
+            </article>
+            <article class="card">
+              <div class="card-top"><span class="issue">#IFDS-03</span><span class="priority high">High</span></div>
+              <h3>SIFT, SURF, AKAZE, ORB dedektörleri</h3>
+              <div class="labels"><span class="label">opencv</span><span class="label">classical</span></div>
+              <div class="meta-row"><div class="avatars"><span class="avatar yv">YV</span></div><span class="points">8 SP</span></div>
+            </article>
+            <article class="card">
+              <div class="card-top"><span class="issue">#IFDS-05</span><span class="priority medium">Medium</span></div>
+              <h3>Grad-CAM açıklanabilirlik</h3>
+              <div class="labels"><span class="label ai">ai</span><span class="label">heatmap</span></div>
+              <div class="meta-row"><div class="avatars"><span class="avatar yv">YV</span></div><span class="points">5 SP</span></div>
+            </article>
+            <article class="card">
+              <div class="card-top"><span class="issue">#IFDS-06</span><span class="priority high">High</span></div>
+              <h3>Streamlit upload ve analiz akışı</h3>
+              <div class="labels"><span class="label">frontend</span><span class="label">workflow</span></div>
+              <div class="meta-row"><div class="avatars"><span class="avatar yy">YY</span></div><span class="points">8 SP</span></div>
+            </article>
+          </section>
+        </div>
+      </section>
+    </section>
+  </main>
+</body>
+</html>

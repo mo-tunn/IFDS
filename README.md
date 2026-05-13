@@ -19,11 +19,15 @@ IFDS, görüntü manipülasyonu tespiti için geliştirilen Streamlit tabanlı b
 
 ### Analiz Sonucu
 
-![IFDS analiz ekranı](docs/quality_outputs/frontend/ifds_frontend_analysis.png)
+![IFDS analiz örnek görseli](tests/edited-photo.jpg)
 
 ### Mobil Görünüm
 
 ![IFDS mobil görünüm](docs/quality_outputs/frontend/ifds_frontend_mobile.png)
+
+### Scrum Tablosu
+
+![IFDS Scrum tablosu](docs/quality_outputs/scrum/ifds_scrum_table.png)
 
 ### SonarQube Dashboard
 
@@ -189,6 +193,7 @@ Proje ödevi kapsamında hazırlanan ana dokümanlar:
 - [Graphviz mimari SVG](docs/quality_outputs/graphviz/ifds_architecture.svg)
 - [Graphviz mimari PDF](docs/quality_outputs/graphviz/ifds_architecture.pdf)
 - [Doxygen/Graphviz çağrı grafiği](docs/quality_outputs/graphviz/doxygen_representative_call_graph.svg)
+- [Scrum tablo ekran görüntüsü](docs/quality_outputs/scrum/ifds_scrum_table.png)
 
 ## Eğitim Notları
 
