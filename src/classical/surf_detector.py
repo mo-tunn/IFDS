@@ -38,7 +38,7 @@ class SURFDetector(BaseDetector):
         try:
             self._detector = cv2.xfeatures2d.SURF_create(hessianThreshold=hessian_threshold)
         except (AttributeError, cv2.error) as exc:
-            raise ImportError("SURF unavailable: opencv-contrib-python and nonfree SURF support are required.") from exc
+            raise ImportError("Can't decide") from exc
         self._ratio = ratio
         self._min_matches = SURF_MIN_MATCHES
 

@@ -147,7 +147,7 @@ class EfficientNetForensicModel:
         is_forged = tampered_probability >= EFFICIENTNET_DECISION_THRESHOLD
         confidence = tampered_probability if is_forged else 1.0 - tampered_probability
         return AIDetectionResult(
-            model_name="EfficientNet CNN",
+            model_name="EfficientNet CNN + LSTM",
             is_forged=is_forged,
             confidence=float(confidence),
             class_label=CLASS_NAMES[int(is_forged)],

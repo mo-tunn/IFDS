@@ -185,13 +185,13 @@ def render_sidebar() -> AnalysisSelection:
 
         st.subheader("AI Models")
         run_xception = st.toggle("Xception CNN", value=True, help="Runs AI classification when the model file is available.")
-        run_efficientnet = st.toggle("EfficientNet CNN", value=True, help="Provides a second AI opinion.")
+        run_efficientnet = st.toggle("EfficientNet CNN + LSTM", value=True, help="Provides a second AI opinion.")
         run_gradcam = st.toggle("Grad-CAM", value=True, disabled=not run_xception, help="Generates a heatmap for the Xception result.")
 
         st.divider()
         model_rows = [
             ("Xception", XCEPTION_MODEL_PATH),
-            ("EfficientNet", EFFICIENTNET_MODEL_PATH),
+            ("EfficientNet + LSTM", EFFICIENTNET_MODEL_PATH),
         ]
         for label, path in model_rows:
             if path.exists():

@@ -32,7 +32,7 @@ def render_results_grid(results: dict[str, DetectionResult]) -> None:
         with columns[index % len(columns)]:
             verdict = "Tampered" if result.is_forged else "Authentic"
             if result.error_message:
-                verdict = "Unavailable"
+                verdict = "can't decide"
             st.markdown(
                 f"""
                 <div class="ifds-result-card {_status_class(result)}">

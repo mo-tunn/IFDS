@@ -52,7 +52,7 @@ def test_efficientnet_predict_with_mock_backend() -> None:
 
     result = model.predict(image)
 
-    assert result.model_name == "EfficientNet CNN"
+    assert result.model_name == "EfficientNet CNN + LSTM"
     assert result.is_forged is True
     assert result.class_label == "Tampered"
     assert result.confidence > 0.9

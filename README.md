@@ -40,7 +40,7 @@ IFDS is a Streamlit-based image forgery analysis application. It combines classi
 ## Key Features
 
 - Classical analysis with SIFT, SURF, AKAZE, and ORB detectors.
-- Optional AI analysis with Xception CNN and EfficientNet CNN model wrappers.
+- Optional AI analysis with fine-tuned Xception CNN and EfficientNet-based model wrappers.
 - Explainability support through Grad-CAM heatmaps for Xception results.
 - Weighted final verdict labels: `Authentic`, `Tampered`, or `Review needed`.
 - PDF/HTML reports with image metadata, algorithm results, comparison data, and final verdict details.
@@ -182,6 +182,19 @@ git lfs pull
 ```
 
 Training metrics are documented in [model_metrics.md](docs/model_metrics.md).
+
+## AI Model Training
+
+The AI layer was prepared with Kaggle/CASIA training workflows under the `notebooks/` directory. The Xception pipeline uses an ImageNet-pretrained Xception backbone, a binary classification head, and a fine-tuning phase where the final backbone layers are unfrozen for forensic classification. The saved application weight is expected at `data/models/xception_finetuned.h5`.
+
+The second AI workflow uses an EfficientNet-based forensic classifier as an additional model opinion. The training notes include ImageNet initialization, validation-threshold selection, and CASIA ground-truth mask-guided crop augmentation to expose the model to localized tampering cues. The saved application weight is expected at `data/models/efficientnet_finetuned.h5`.
+
+Supporting materials:
+
+- [Model metrics](docs/model_metrics.md)
+- [Xception training notebook](notebooks/IFDS_Kaggle_Model_Training.ipynb)
+- [EfficientNet CNN training notebook](notebooks/IFDS_Kaggle_EfficientNet_CNN_Training.ipynb)
+- [EfficientNet/LSTM experiment notebook](notebooks/IFDS_Kaggle_EfficientNet_LSTM_Training.ipynb)
 
 ## Delivery Documents
 
